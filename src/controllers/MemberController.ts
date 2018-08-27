@@ -26,4 +26,5 @@ export default class MemberController {
   allUsers() {
     return Member.find()
   }
+
 }

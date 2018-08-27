@@ -21,7 +21,7 @@ export default class LoginController {
     const user = await Member.findOne({ where: { email } })
     if (!user || !user.id) throw new BadRequestError('A user with this email does not exist')
 
-    // if (!await user.checkPassword(password)) throw new BadRequestError('The password is not correct')
+    if (!await user.checkPassword(password)) throw new BadRequestError('The password is not correct')
 
     const jwt = sign({ id: user.id })
     return { jwt }
