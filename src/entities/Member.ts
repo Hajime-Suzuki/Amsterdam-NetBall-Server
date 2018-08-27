@@ -14,7 +14,7 @@ import * as bcrypt from 'bcrypt'
 import { Position } from './Position'
 import { Role } from './Role'
 import { Team } from './Team'
-import {  IsEmail, IsString, IsDate, IsBoolean } from "class-validator";
+import { IsEmail, IsString, IsDate, IsBoolean } from 'class-validator'
 
 @Entity()
 export class Member extends BaseEntity {
@@ -24,19 +24,18 @@ export class Member extends BaseEntity {
   @IsString()
   @Column('varchar', { length: 255 })
   name: string
-  
+
   @IsString()
   @Column('varchar', { length: 255 })
   address: string
-  
+
   @IsDate()
   @Column('date')
   dateOfBirth: Date
-  
+
   @IsBoolean()
   @Column('boolean')
   isCurrentMember: boolean
-  
 
   @IsEmail()
   @Column('varchar', { length: 255 })
@@ -49,23 +48,23 @@ export class Member extends BaseEntity {
   @IsDate()
   @Column('date')
   startDate: Date
-  
+
   @IsDate()
   @Column('date')
   endDate: Date
 
-  @ManyToMany(()=>Position, position=>position.members)
+  @ManyToMany(() => Position, position => position.members)
   @JoinTable()
   positions: Position[]
 
-  @ManyToOne(() => Role, role => role.members )
+  @ManyToOne(() => Role, role => role.members)
   role: Role
 
-  @ManyToOne(()=>Team, team=>team.members)
+  @ManyToOne(() => Team, team => team.members)
   team: Team
 
   @BeforeInsert()
   async setPassword() {
-     await this.password = bcrypt.hash(this.password, 10)
+    this.password = await bcrypt.hash(this.password, 10)
   }
 }

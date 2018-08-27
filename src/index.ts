@@ -1,21 +1,36 @@
-import "reflect-metadata";
-import {createConnection} from "typeorm";
-import {User} from "./entity/User";
+import * as dotenv from 'dotenv'
+import 'reflect-metadata'
+import { Action, BadRequestError, createKoaServer } from 'routing-controllers'
+import { connectDatabase } from './databaseConnection'
+dotenv.config()
 
-createConnection().then(async connection => {
+export const app = createKoaServer({
+  cors: true,
+  controllers: []
+  // authorizationChecker: (action: Action) => {
+  //     const token: string = action.request.headers.authorization
+  //     try {
+  //         return !!(token && verify(token))
+  //     } catch (e) {
+  //         throw new BadRequestError(e)
+  //     }
+  // },
+  // currentUserChecker: async (action: Action) => {
+  //     const token: string = action.request.headers.authorization
 
-    console.log("Inserting a new user into the database...");
-    const user = new User();
-    user.firstName = "Timber";
-    user.lastName = "Saw";
-    user.age = 25;
-    await connection.manager.save(user);
-    console.log("Saved a new user with id: " + user.id);
-    
-    console.log("Loading users from the database...");
-    const users = await connection.manager.find(User);
-    console.log("Loaded users: ", users);
-     
-    console.log("Here you can setup and run express/koa/any other framework.");
-    
-}).catch(error => console.log(error));
+  //     if (token) {
+  //         const { id } = verify(token)
+  //         return User.findOne({ id })
+  //     }
+
+  //     return undefined
+  // }
+})
+
+connectDatabase()
+  .then(_ => {
+    app.listen(4000, () => {
+      console.log('Server is on 4000')
+    })
+  })
+  .catch(err => console.error(err))
