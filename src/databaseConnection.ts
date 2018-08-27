@@ -32,10 +32,10 @@ export const connectDatabase = async () => {
   const dbSettings = await getConnectionOptions()
   const settings = { ...dbSettings, namingStrategy: new CustomNamingStrategy() }
 
-  // const dbSettings = await getConnectionOptions()
-  // const settings = { ...dbSettings, namingStrategy: new CustomNamingStrategy() }
-
-  return createConnection(settings).then(async () => {
-    console.log('Connected to Postgres with TypeORM')
-  })
+  const connection = await createConnection(settings)
+  console.log('Connected to Postgres with TypeORM')
+  // await connection.undoLastMigration()
+  // await connection.runMigrations()
+  console.log('Migration Done')
+  return connection
 }

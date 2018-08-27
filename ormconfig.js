@@ -6,7 +6,7 @@ module.exports = {
   password: process.env.DB_PASSWORD || 'knakworst',
   database: process.env.DB_DATABASE_NAME || 'postgres',
   synchronize: true,
-  logging: false,
+  logging: true,
   entities: ['src/entities/**/*.ts'],
   migrations: ['src/migration/**/*.ts'],
   subscribers: ['src/subscriber/**/*.ts'],
