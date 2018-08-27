@@ -1,3 +1,6 @@
+import { connectDatabase } from './databaseConnection'
+import { createKoaServer } from '../node_modules/routing-controllers'
+
 export const app = createKoaServer({
   cors: true,
   controllers: []
