@@ -15,6 +15,7 @@ import { Position } from './Position'
 import { Role } from './Role'
 import { Team } from './Team'
 import { IsEmail, IsString, IsDate, IsBoolean } from 'class-validator'
+import { Exclude } from '../../node_modules/class-transformer'
 
 @Entity()
 export class Member extends BaseEntity {
@@ -55,6 +56,7 @@ export class Member extends BaseEntity {
 
   @IsString()
   @Column('text')
+  @Exclude({ toPlainOnly: true })
   password: string
 
   // @IsDate()
