@@ -3,20 +3,22 @@
   "version": "0.0.1",
   "description": "Awesome project developed with TypeORM.",
   "devDependencies": {
-    "ts-node": "3.3.0",
     "@types/node": "^8.0.29",
-    "typescript": "2.5.2",
-    "dotenv": "^6.0.0"
+    "dotenv": "^6.0.0",
+    "ts-node": "3.3.0",
+    "typescript": "2.5.2"
   },
   "dependencies": {
-    "pg": "^7.3.0",
+    "@types/bcrypt": "^2.0.0",
     "@types/koa": "^2.0.46",
     "@types/koa-bodyparser": "^5.0.1",
     "@types/koa-router": "^7.0.31",
+    "bcrypt": "^3.0.0",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
     "koa-multer": "^1.0.2",
     "koa-router": "^7.4.0",
+    "pg": "^7.3.0",
     "reflect-metadata": "^0.1.12",
     "routing-controllers": "^0.7.7",
     "typeorm": "^0.2.7"
