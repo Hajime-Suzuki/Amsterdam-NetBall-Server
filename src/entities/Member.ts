@@ -67,4 +67,8 @@ export class Member extends BaseEntity {
   async setPassword() {
     this.password = await bcrypt.hash(this.password, 10)
   }
+
+  checkPassword(rawPassword: string): Promise<boolean> {
+    return bcrypt.compare(rawPassword, this.password)
+  }
 }
