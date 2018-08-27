@@ -1,9 +1,3 @@
-import * as dotenv from 'dotenv'
-import 'reflect-metadata'
-import { Action, BadRequestError, createKoaServer } from 'routing-controllers'
-import { connectDatabase } from './databaseConnection'
-dotenv.config()
-
 export const app = createKoaServer({
   cors: true,
   controllers: []
