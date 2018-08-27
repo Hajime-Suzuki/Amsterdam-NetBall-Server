@@ -29,7 +29,7 @@ export default () =>
     url: process.env.DATABASE_URL || 'postgres://postgres:knakworst@localhost:5432/postgres',
     entities: [
       Member
-    ]
+    ],
     synchronize: true, // careful with this in production!
     logging: true,
     namingStrategy: new CustomNamingStrategy()

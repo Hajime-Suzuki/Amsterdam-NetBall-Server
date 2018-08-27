@@ -1,6 +1,6 @@
-import { JsonController } from 'routing-controllers'
+import { JsonController, Post, Param, Get, Body, Authorized } from 'routing-controllers'
 import Member from './entity';
-// , Post, Param, Get, Body, Authorized 
+//  
 
 @JsonController()
 export default class MemberController {

@@ -1,9 +1,9 @@
 import 'reflect-metadata'
 import { Action, BadRequestError, useKoaServer } from 'routing-controllers'
 import setupDb from './db'
-import TicketController from './tickets/controller'
 import { verify } from './jwt'
-import MemberController from './controllers/member'
+import MemberController from './controllers/MemberController'
+import Member from './entities/Member';
 import * as Koa from 'koa'
 import {Server} from 'http'
 
@@ -15,9 +15,6 @@ useKoaServer(app, {
   cors: true,
   controllers: [
     MemberController,
-    LoginController,
-    EventController,
-    TicketController
   ],
   authorizationChecker: (action: Action) => {
     const header: string = action.request.headers.authorization
@@ -41,7 +38,7 @@ useKoaServer(app, {
       
       if (token) {
         const {id} = verify(token)
-        return User.findOne(id)
+        return Member.findOne(id)
       }
     }
     return undefined
