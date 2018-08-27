@@ -22,12 +22,24 @@ export class Member extends BaseEntity {
   id: number
 
   @IsString()
-  @Column('varchar', { length: 255 })
-  name: string
+  @Column('varchar', { length: 100 })
+  firstName: string
+
+  @IsString()
+  @Column('varchar', { length: 100 })
+  lastName: string
 
   @IsString()
   @Column('varchar', { length: 255 })
-  address: string
+  streetAddress: string
+
+  @IsString()
+  @Column('char', { length: 6 })
+  postalCode: string
+
+  @IsString()
+  @Column('varchar', { length: 50 })
+  city: string
 
   @IsDate()
   @Column('date')
