@@ -13,24 +13,24 @@ export const app = createKoaServer({
     LoginController,
     MemberController
   ],
-  authorizationChecker: (action: Action) => {
-      const token: string = action.request.headers.authorization
-      try {
-          return !!(token && verify(token))
-      } catch (e) {
-          throw new BadRequestError(e)
-      }
-  },
-  currentUserChecker: async (action: Action) => {
-      const token: string = action.request.headers.authorization
+  // authorizationChecker: (action: Action) => {
+  //     const token: string = action.request.headers.authorization
+  //     try {
+  //         return !!(token && verify(token))
+  //     } catch (e) {
+  //         throw new BadRequestError(e)
+  //     }
+  // },
+  // currentUserChecker: async (action: Action) => {
+  //     const token: string = action.request.headers.authorization
 
-      if (token) {
-          const { id } = verify(token)
-          return Member.findOne({ id })
-      }
+  //     if (token) {
+  //         const { id } = verify(token)
+  //         return Member.findOne({ id })
+  //     }
 
-      return undefined
-  }
+  //     return undefined
+  // }
 })
 
 connectDatabase()
