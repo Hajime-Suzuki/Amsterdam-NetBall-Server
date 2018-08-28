@@ -15,7 +15,8 @@ import { Position } from './Position'
 import { Role } from './Role'
 import { Team } from './Team'
 import { IsEmail, IsString, IsDate, IsBoolean } from 'class-validator'
-import { Exclude } from '../../node_modules/class-transformer'
+import { Exclude } from 'class-transformer'
+import { Activity } from './Activity'
 
 @Entity()
 export class Member extends BaseEntity {
@@ -47,7 +48,7 @@ export class Member extends BaseEntity {
   dateOfBirth: Date
 
   @IsBoolean()
-  @Column('boolean')
+  @Column('boolean', { default: false })
   isCurrentMember: boolean
 
   @IsEmail()
@@ -60,11 +61,11 @@ export class Member extends BaseEntity {
   password: string
 
   @IsDate()
-  @Column('date')
+  @Column('date', { nullable: true })
   startDate: Date
 
   @IsDate()
-  @Column('date')
+  @Column('date', { nullable: true })
   endDate: Date
 
   @ManyToMany(() => Position, position => position.members)
@@ -76,6 +77,10 @@ export class Member extends BaseEntity {
 
   @ManyToOne(() => Team, team => team.members)
   team: Team
+
+  @ManyToMany(() => Activity, activity => activity.members)
+  @JoinTable()
+  activities: Activity[]
 
   @BeforeInsert()
   async setPassword() {

@@ -1,5 +1,5 @@
 import { connectDatabase } from './databaseConnection'
-import { createKoaServer } from '../node_modules/routing-controllers'
+import { createKoaServer } from 'routing-controllers'
 import PopulateController from './controllers/Populate'
 
 export const app = createKoaServer({
