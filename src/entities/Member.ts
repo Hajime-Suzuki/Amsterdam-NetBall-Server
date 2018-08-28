@@ -24,7 +24,7 @@ import { UnauthorizedError } from "../../node_modules/routing-controllers"
 // @Unique(['email'])
 export class Member extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @IsString()
   @Column("varchar", { length: 100 })
@@ -35,23 +35,23 @@ export class Member extends BaseEntity {
   lastName: string
 
   @IsString()
-  @Column("varchar", { length: 255 })
+  @Column('varchar', { length: 255, nullable: true })
   streetAddress: string
 
   @IsString()
-  @Column("char", { length: 6 })
+  @Column('char', { length: 6, nullable: true  })
   postalCode: string
 
   @IsString()
-  @Column("varchar", { length: 50 })
+  @Column('varchar', { length: 50, nullable: true })
   city: string
 
   // @IsDate()
-  @Column("date")
+  @Column('date', { nullable: true })
   dateOfBirth: Date
 
-  // @IsBoolean()
-  @Column("boolean", { default: false })
+  @IsBoolean()
+  @Column('boolean', { nullable: true })
   isCurrentMember: boolean
 
   @IsEmail()
