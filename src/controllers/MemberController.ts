@@ -78,7 +78,9 @@ export default class MemberController {
     if (positions) {
       const allPositions = positions.split(',')
       console.log('positions', allPositions)
-      query = query.andWhere("positions.id = :position", { position: allPositions[0] })
+      allPositions.forEach( position => 
+        query = query.andWhere("positions.id = :position", { position })        
+      )
     }
     if (team) {
       query = query.where("member.team.id = :team", { team: team })
