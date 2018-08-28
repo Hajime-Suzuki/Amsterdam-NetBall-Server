@@ -7,30 +7,35 @@ import {
   BeforeInsert,
   ManyToMany,
   JoinTable,
-  ManyToOne
-} from 'typeorm'
+  ManyToOne,
+  Unique
+} from "typeorm"
 
-import * as bcrypt from 'bcrypt'
-import { Position } from './Position'
-import { Role } from './Role'
-import { Team } from './Team'
-import { IsEmail, IsString, IsDate, IsBoolean } from 'class-validator'
-import { Exclude } from '../../node_modules/class-transformer'
+import * as bcrypt from "bcrypt"
+import { Position } from "./Position"
+import { Role } from "./Role"
+import { Team } from "./Team"
+import { IsEmail, IsString, IsDate, IsBoolean } from "class-validator"
+import { Exclude } from "class-transformer"
+import { Activity } from "./Activity"
+import { UnauthorizedError } from "../../node_modules/routing-controllers"
 
 @Entity()
+// @Unique(['email'])
 export class Member extends BaseEntity {
   @PrimaryGeneratedColumn()
   id?: number
 
   @IsString()
-  @Column('varchar', { length: 100 })
+  @Column("varchar", { length: 100 })
   firstName: string
 
   @IsString()
-  @Column('varchar', { length: 100 })
+  @Column("varchar", { length: 100 })
   lastName: string
 
   @IsString()
+<<<<<<< HEAD
   @Column('varchar', { length: 255, nullable: true })
   streetAddress: string
 
@@ -48,34 +53,65 @@ export class Member extends BaseEntity {
 
   @IsBoolean()
   @Column('boolean', { nullable: true })
+=======
+  @Column("varchar", { length: 255 })
+  streetAddress: string
+
+  @IsString()
+  @Column("char", { length: 6 })
+  postalCode: string
+
+  @IsString()
+  @Column("varchar", { length: 50 })
+  city: string
+
+  // @IsDate()
+  @Column("date")
+  dateOfBirth: Date
+
+  // @IsBoolean()
+  @Column("boolean", { default: false })
+>>>>>>> master
   isCurrentMember: boolean
 
   @IsEmail()
-  @Column('varchar', { length: 255 })
+  @Column("varchar", { length: 255 })
   email: string
 
   @IsString()
-  @Column('text')
+  @Column("text")
   @Exclude({ toPlainOnly: true })
   password: string
 
   // @IsDate()
+<<<<<<< HEAD
   @Column('date', { nullable: true })
   startDate: Date
 
   // @IsDate()
   @Column('date', { nullable: true })
+=======
+  @Column("date", { nullable: true })
+  startDate: Date
+
+  // @IsDate()
+  @Column("date", { nullable: true })
+>>>>>>> master
   endDate: Date
 
   @ManyToMany(() => Position, position => position.members)
   @JoinTable()
   positions: Position[]
 
-  @ManyToOne(() => Role, role => role.members)
+  @ManyToOne(() => Role, role => role.members, { eager: true })
   role: Role
 
   @ManyToOne(() => Team, team => team.members)
   team: Team
+
+  @ManyToMany(() => Activity, activity => activity.members)
+  @JoinTable()
+  activities: Activity[]
 
   @BeforeInsert()
   async setPassword() {
@@ -84,5 +120,10 @@ export class Member extends BaseEntity {
 
   checkPassword(rawPassword: string): Promise<boolean> {
     return bcrypt.compare(rawPassword, this.password)
+  }
+
+  checkIfAdmin() {
+    if (this.role.roleName !== "admin")
+      throw new UnauthorizedError("you are not allowed")
   }
 }

@@ -5,8 +5,13 @@ import {
   Get,
   Body,
   Authorized,
+<<<<<<< HEAD
   CurrentUser,
   QueryParam
+=======
+  UnauthorizedError,
+  BadRequestError
+>>>>>>> master
 } from 'routing-controllers'
 import { getRepository } from 'typeorm'
 import { Member } from '../entities/Member'
@@ -16,6 +21,7 @@ import { Position } from '../entities/Position'
 export default class MemberController {
   @Post('/signup')
   signup(@Body() data: Member) {
+    console.log(data)
     return Member.create(data).save()
   }
 
@@ -91,4 +97,14 @@ export default class MemberController {
     return query.getMany()
   }
 
+<<<<<<< HEAD
 }
+=======
+  // @Post('/login')
+  // async login(@Body() { email, password }: LoginParams) {
+  //   const member = await Member.findOne({ email })
+  //   if (await member.checkPassword(password))
+  //     throw new BadRequestError('password and email do not match')
+  // }
+}
+>>>>>>> master

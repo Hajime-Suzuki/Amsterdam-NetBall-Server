@@ -30,6 +30,7 @@
   "scripts": {
     "start": "nodemon --exec ts-node src/index.ts",
     "watch": "node_modules/.bin/tsc -w",
-    "compile": "node_modules/.bin/tsc -p ."
+    "compile": "node_modules/.bin/tsc -p .",
+    "migrate": "ts-node ./node_modules/.bin/typeorm.cmd migrations:create -n test"
   }
 }
