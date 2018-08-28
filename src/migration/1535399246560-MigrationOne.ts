@@ -70,9 +70,9 @@ export class MigrationOne1535399246560 implements MigrationInterface {
 
     await queryRunner.query(`
     INSERT INTO public.leagues (league_name) VALUES 
-('66666')
-,('654')
-,('qdb');
+      ('66666')
+      ,('654')
+      ,('qdb');
     `)
   }
 
