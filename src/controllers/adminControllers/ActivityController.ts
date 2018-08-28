@@ -8,7 +8,8 @@ import {
   Patch,
   NotFoundError,
   Delete,
-  CurrentUser
+  CurrentUser,
+  HttpCode
 } from 'routing-controllers'
 import { Member } from '../../entities/Member'
 import { Activity } from '../../entities/Activity'
@@ -22,6 +23,7 @@ export default class ActivityController {
 
   @Authorized()
   @Post('/')
+  @HttpCode(201)
   createActivity(@CurrentUser() member: Member, @Body() data: Activity) {
     member.checkIfAdmin()
     return Activity.create(data).save()
