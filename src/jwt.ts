@@ -5,6 +5,7 @@ const ttl = 3600 * 24 * 12
 
 interface JwtPayload {
   id: number
+  role: string
 }
 
 export const sign = (data: JwtPayload) =>
