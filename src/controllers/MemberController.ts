@@ -40,8 +40,7 @@ export default class MemberController {
   @Get('/members')
   async allUsers(
     @QueryParam('id') id: string,
-    @QueryParam('firstName') firstName: string,
-    @QueryParam('lastName') lastName: string,
+    @QueryParam('name') name: string,
     @QueryParam('email') email: string,
     @QueryParam('city') city: string,
     @QueryParam('isCurrentMember') isCurrentMember: string,
@@ -56,11 +55,8 @@ export default class MemberController {
  
     let query = Member.createQueryBuilder("member").leftJoinAndSelect("member.positions", "positions")
 
-    if (firstName) {
-      query = query.where("member.firstName LIKE :firstName", { firstName: `%${firstName}%` })
-    }
-    if (lastName) {
-      query = query.andWhere("member.lastName LIKE :lastName", { lastName: `%${lastName}%` })
+    if (name) {
+      query = query.where("member.firstName LIKE :name OR member.lastName LIKE :name", { name: `%${name}%` })
     }
     if (email) {
       query = query.andWhere("member.email LIKE :email", { email: `%${email}%` })
