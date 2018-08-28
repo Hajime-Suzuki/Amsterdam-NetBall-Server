@@ -4,7 +4,9 @@ import {
   Param,
   Get,
   Body,
-  Authorized
+  Authorized,
+  UnauthorizedError,
+  BadRequestError
 } from 'routing-controllers'
 import { Member } from '../entities/Member'
 
@@ -26,4 +28,11 @@ export default class MemberController {
   allUsers() {
     return Member.find()
   }
+
+  // @Post('/login')
+  // async login(@Body() { email, password }: LoginParams) {
+  //   const member = await Member.findOne({ email })
+  //   if (await member.checkPassword(password))
+  //     throw new BadRequestError('password and email do not match')
+  // }
 }

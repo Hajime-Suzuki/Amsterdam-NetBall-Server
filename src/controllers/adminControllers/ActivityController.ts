@@ -7,26 +7,34 @@ import {
   Authorized,
   Patch,
   NotFoundError,
-  Delete
+  Delete,
+  CurrentUser
 } from 'routing-controllers'
 import { Member } from '../../entities/Member'
 import { Activity } from '../../entities/Activity'
 
 @JsonController('/admin/activity')
 export default class ActivityController {
-  // @Authorized()
   @Get('/')
   getActivities() {
     return Activity.find()
   }
 
+  @Authorized()
   @Post('/')
-  createActivity(@Body() data: Activity) {
+  createActivity(@CurrentUser() member: Member, @Body() data: Activity) {
+    member.checkIfAdmin()
     return Activity.create(data).save()
   }
 
+  @Authorized()
   @Patch('/:id')
-  async editActivity(@Param('id') id: number, @Body() data: Activity) {
+  async editActivity(
+    @CurrentUser() member: Member,
+    @Param('id') id: number,
+    @Body() data: Activity
+  ) {
+    member.checkIfAdmin()
     const activity = await Activity.findOne({ id })
     if (!activity) throw new NotFoundError('activity not found')
 
@@ -34,8 +42,10 @@ export default class ActivityController {
     return Activity.findOne({ id })
   }
 
+  @Authorized()
   @Delete('/:id')
-  async deleteActivity(@Param('id') id: number, @Body() data: Activity) {
+  async deleteActivity(@CurrentUser() member: Member, @Param('id') id: number) {
+    member.checkIfAdmin()
     const activity = await Activity.findOne({ id })
     if (!activity) throw new NotFoundError('activity not found')
     return activity.remove()

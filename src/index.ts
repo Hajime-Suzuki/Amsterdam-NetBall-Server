@@ -1,29 +1,38 @@
 import { connectDatabase } from './databaseConnection'
-import { createKoaServer } from 'routing-controllers'
+import { createKoaServer, Action, BadRequestError } from 'routing-controllers'
 import PopulateController from './controllers/Populate'
 import ActivityController from './controllers/adminControllers/ActivityController'
+import { verify } from './jwt'
+import { Member } from './entities/Member'
+import MemberController from './controllers/MemberController'
+import LoginController from './controllers/LoginController'
 
 export const app = createKoaServer({
   cors: true,
-  controllers: [PopulateController, ActivityController]
-  // authorizationChecker: (action: Action) => {
-  //     const token: string = action.request.headers.authorization
-  //     try {
-  //         return !!(token && verify(token))
-  //     } catch (e) {
-  //         throw new BadRequestError(e)
-  //     }
-  // },
-  // currentUserChecker: async (action: Action) => {
-  //     const token: string = action.request.headers.authorization
+  controllers: [
+    PopulateController,
+    ActivityController,
+    MemberController,
+    LoginController
+  ],
+  authorizationChecker: (action: Action) => {
+    const token: string = action.request.headers.authorization
+    try {
+      return !!(token && verify(token))
+    } catch (e) {
+      throw new BadRequestError(e)
+    }
+  },
+  currentUserChecker: async (action: Action) => {
+    const token: string = action.request.headers.authorization
 
-  //     if (token) {
-  //         const { id } = verify(token)
-  //         return User.findOne({ id })
-  //     }
+    if (token) {
+      const { id } = verify(token)
+      return Member.findOne({ id })
+    }
 
-  //     return undefined
-  // }
+    return undefined
+  }
 })
 
 connectDatabase()
