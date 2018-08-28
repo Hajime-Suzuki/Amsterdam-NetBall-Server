@@ -7,7 +7,8 @@ import {
   BeforeInsert,
   ManyToMany,
   JoinTable,
-  ManyToOne
+  ManyToOne,
+  Unique
 } from "typeorm"
 
 import * as bcrypt from "bcrypt"
@@ -17,8 +18,10 @@ import { Team } from "./Team"
 import { IsEmail, IsString, IsDate, IsBoolean } from "class-validator"
 import { Exclude } from "class-transformer"
 import { Activity } from "./Activity"
+import { UnauthorizedError } from "../../node_modules/routing-controllers"
 
 @Entity()
+// @Unique(['email'])
 export class Member extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
@@ -47,7 +50,7 @@ export class Member extends BaseEntity {
   @Column("date")
   dateOfBirth: Date
 
-  @IsBoolean()
+  // @IsBoolean()
   @Column("boolean", { default: false })
   isCurrentMember: boolean
 
@@ -72,7 +75,7 @@ export class Member extends BaseEntity {
   @JoinTable()
   positions: Position[]
 
-  @ManyToOne(() => Role, role => role.members)
+  @ManyToOne(() => Role, role => role.members, { eager: true })
   role: Role
 
   @ManyToOne(() => Team, team => team.members)
@@ -89,5 +92,10 @@ export class Member extends BaseEntity {
 
   checkPassword(rawPassword: string): Promise<boolean> {
     return bcrypt.compare(rawPassword, this.password)
+  }
+
+  checkIfAdmin() {
+    if (this.role.roleName !== "admin")
+      throw new UnauthorizedError("you are not allowed")
   }
 }
