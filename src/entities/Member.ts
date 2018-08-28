@@ -35,7 +35,6 @@ export class Member extends BaseEntity {
   lastName: string
 
   @IsString()
-<<<<<<< HEAD
   @Column('varchar', { length: 255, nullable: true })
   streetAddress: string
 
@@ -53,25 +52,6 @@ export class Member extends BaseEntity {
 
   @IsBoolean()
   @Column('boolean', { nullable: true })
-=======
-  @Column("varchar", { length: 255 })
-  streetAddress: string
-
-  @IsString()
-  @Column("char", { length: 6 })
-  postalCode: string
-
-  @IsString()
-  @Column("varchar", { length: 50 })
-  city: string
-
-  // @IsDate()
-  @Column("date")
-  dateOfBirth: Date
-
-  // @IsBoolean()
-  @Column("boolean", { default: false })
->>>>>>> master
   isCurrentMember: boolean
 
   @IsEmail()
@@ -84,19 +64,11 @@ export class Member extends BaseEntity {
   password: string
 
   // @IsDate()
-<<<<<<< HEAD
-  @Column('date', { nullable: true })
-  startDate: Date
-
-  // @IsDate()
-  @Column('date', { nullable: true })
-=======
   @Column("date", { nullable: true })
   startDate: Date
 
   // @IsDate()
   @Column("date", { nullable: true })
->>>>>>> master
   endDate: Date
 
   @ManyToMany(() => Position, position => position.members)
