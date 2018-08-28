@@ -5,13 +5,9 @@ import {
   Get,
   Body,
   Authorized,
-<<<<<<< HEAD
   CurrentUser,
-  QueryParam
-=======
-  UnauthorizedError,
+  QueryParam,
   BadRequestError
->>>>>>> master
 } from 'routing-controllers'
 import { getRepository } from 'typeorm'
 import { Member } from '../entities/Member'
@@ -47,7 +43,7 @@ export default class MemberController {
     @QueryParam('dateOfBirth') dateOfBirth: string,
     @QueryParam('startDate') startDate: string,
     @QueryParam('endDate') endDate: string,
-    @QueryParam('position') position: string,
+    @QueryParam('positions') positions: string,
     @QueryParam('team') team: string,
     @QueryParam('role') role: string,
     @CurrentUser() user: Member | null
@@ -93,14 +89,4 @@ export default class MemberController {
     return query.getMany()
   }
 
-<<<<<<< HEAD
 }
-=======
-  // @Post('/login')
-  // async login(@Body() { email, password }: LoginParams) {
-  //   const member = await Member.findOne({ email })
-  //   if (await member.checkPassword(password))
-  //     throw new BadRequestError('password and email do not match')
-  // }
-}
->>>>>>> master
