@@ -12,6 +12,7 @@ import { Member } from '../entities/Member'
 export default class MemberController {
   @Post('/signup')
   signup(@Body() data: Member) {
+    console.log(data)
     return Member.create(data).save()
   }
 
