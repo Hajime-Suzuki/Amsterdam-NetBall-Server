@@ -33,8 +33,5 @@ export class Activity extends BaseEntity {
   points: number
 
   @ManyToMany(() => Member, member => member.activities)
-  teams: Team[]
-
-  @ManyToMany(() => Member, member => member.activities)
   members: Member[]
 }

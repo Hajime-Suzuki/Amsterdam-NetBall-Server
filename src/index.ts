@@ -1,12 +1,11 @@
 import { connectDatabase } from "./databaseConnection"
 import { createKoaServer } from "routing-controllers"
 import PopulateController from "./controllers/Populate"
-import MemberController from "./controllers/MemberController"
-import LoginController from "./controllers/LoginController"
+import ActivityController from "./controllers/adminControllers/ActivityController"
 
 export const app = createKoaServer({
   cors: true,
-  controllers: [PopulateController, MemberController, LoginController]
+  controllers: [PopulateController, ActivityController]
   // authorizationChecker: (action: Action) => {
   //     const token: string = action.request.headers.authorization
   //     try {
