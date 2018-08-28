@@ -5,10 +5,12 @@ import {
   Get,
   Body,
   Authorized,
-  CurrentUser
+  CurrentUser,
+  QueryParam
 } from 'routing-controllers'
 import { getRepository } from 'typeorm'
 import { Member } from '../entities/Member'
+import { Position } from '../entities/Position'
 
 @JsonController()
 export default class MemberController {
@@ -27,93 +29,66 @@ export default class MemberController {
     return member
   }
 
-/*
-
-Simple example of QueryBuilder:
-
-const firstUser = await connection
-    .getRepository(User)
-    .createQueryBuilder("user")
-    .where("user.id = :id", { id: 1 })
-    .getOne();
-
-*/
 
   // @Authorized()
   @Get('/members')
   async allUsers(
-    // @Body() filterParams,
-    filterParams: string,
-    @CurrentUser() user: Member | null,
+    @QueryParam('id') id: string,
+    @QueryParam('firstName') firstName: string,
+    @QueryParam('lastName') lastName: string,
+    @QueryParam('email') email: string,
+    @QueryParam('city') city: string,
+    @QueryParam('isCurrentMember') isCurrentMember: string,
+    @QueryParam('dateOfBirth') dateOfBirth: string,
+    @QueryParam('startDate') startDate: string,
+    @QueryParam('endDate') endDate: string,
+    @QueryParam('position') position: string,
+    @QueryParam('team') team: string,
+    @QueryParam('role') role: string,
+    @CurrentUser() user: Member | null
   ) {
-    // const qb = await Member.createQueryBuilder("member");
-    // const query = await Member.createQueryBuilder("member")
+ 
+    let query = Member.createQueryBuilder("member").leftJoinAndSelect("member.positions", "positions")
 
-    // const query = await qb
-    // .select("member")
-    // .from(Member, "member")
-    // .where("member.firstName = :firstName", { firstName: filterParams })
-    // .getMany()
-
-// .createQueryBuilder("user")
-//     .select("SUM(user.photosCount)", "sum")
-
-    // let query = Member.createQueryBuilder().select("member").from(Member, "member")
-    // query = query.where("user.firstName LIKE %:firstName%", { firstName: filterParams.filterParams })
-
-    // if (filterParams.firstName && filterParams.firstName !== '') {
-    //   query = query.where("user.firstName LIKE %:firstName%", { firstName: filterParams.firstName })
-    // }
-    // if (filterParams.lastName && filterParams.lastName !== '') {
-    //   query = query.where("user.lastName LIKE %:lastName%", { lastName: filterParams.lastName })
-    // }
-    // if (filterParams.email && filterParams.email !== '') {
-    //   query = query.where("user.email LIKE %:email%", { email: filterParams.email })
-    // }
-    // if (filterParams.city && filterParams.city !== '') {
-    //   query = query.where("user.city LIKE %:city%", { city: filterParams.city })
-    // }
-    // if (filterParams.isCurrentMember && filterParams.isCurrentMember !== null) {
-    //   query = query.where("user.isCurrentMember = :isCurrentMember", { isCurrentMember: filterParams.isCurrentMember })
-    // }
-    // if (filterParams.dateOfBirth && filterParams.dateOfBirth !== null) {
-    //   query = query.where("user.dateOfBirth = :dateOfBirth", { dateOfBirth: filterParams.dateOfBirth })
-    // }
-    // if (filterParams.startDate && filterParams.startDate !== null) {
-    //   query = query.where("user.startDate = :startDate", { startDate: filterParams.startDate })
-    // }
-    // if (filterParams.endDate && filterParams.endDate !== null) {
-    //   query = query.where("user.endDate = :endDate", { endDate: filterParams.endDate })
-    // }
-    // if (filterParams.positions && filterParams.positions !== null) {
-    //   query = query.where("user.positions = :positions", { positions: filterParams.positions })
-    // }
-    // if (filterParams.team && filterParams.team !== null) {
-    //   query = query.where("user.team = :team", { team: filterParams.team })
-    // }
-    // if (filterParams.role && filterParams.role !== null) {
-    //   query = query.where("user.role = :role", { role: filterParams.role })
-    // }
-
-
-    // return query
-    return Member.find()
+    if (firstName) {
+      query = query.where("member.firstName LIKE :firstName", { firstName: `%${firstName}%` })
+    }
+    if (lastName) {
+      query = query.andWhere("member.lastName LIKE :lastName", { lastName: `%${lastName}%` })
+    }
+    if (email) {
+      query = query.andWhere("member.email LIKE :email", { email: `%${email}%` })
+    }
+    if (city) {
+      query = query.andWhere("member.city LIKE :city", { city: `%${city}%` })
+    }
+    if (isCurrentMember) {
+      query = query.andWhere("member.isCurrentMember = :isCurrentMember", { isCurrentMember })
+    }
+    if (dateOfBirth) {
+      const timestamp = new Date(dateOfBirth)
+      query = query.andWhere("member.dateOfBirth = :dateOfBirth", { dateOfBirth: timestamp })
+    }
+    if (startDate) {
+      const timestamp = new Date(startDate)
+      query = query.andWhere("member.startDate = :startDate", { startDate: timestamp })
+    }
+    if (endDate) {
+      const timestamp = new Date(endDate)
+      query = query.andWhere("member.endDate = :endDate", { endDate: timestamp })
+    }
+    if (positions) {
+      const allPositions = positions.split(',')
+      console.log('positions', allPositions)
+      query = query.andWhere("positions.id = :position", { position: allPositions[0] })
+    }
+    if (team) {
+      query = query.where("member.team.id = :team", { team: team })
+    }
+    if (role) {
+      query = query.where("member.role.id = :role", { role: role })
+    }
+    return query.getMany()
   }
 
 }
-
-/*
-{
-  role: Role // 'member' | 'committee' | 'admin'
-  firstName: string,
-  lastName: string,
-  email: string
-  city: string
-  dateOfBirth: Date
-  isCurrentMember: boolean
-  startDate: Date
-  endDate: Date
-  team: Team
-  positions: Position[]
-}
-*/
