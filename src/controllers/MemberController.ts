@@ -4,7 +4,8 @@ import {
   Param,
   Get,
   Body,
-  Authorized
+  Authorized,
+  CurrentUser
 } from 'routing-controllers'
 import { Member } from '../entities/Member'
 
@@ -17,13 +18,19 @@ export default class MemberController {
 
   @Authorized()
   @Get('/members/:id([0-9]+)')
-  getUser(@Param('id') id: number) {
-    return Member.findOne(id)
+  getUser(
+    @Param('id') id: number,
+    @CurrentUser() user: Member
+  ) {
+    const member = Member.findOne(id)
+    return member
   }
 
   @Authorized()
   @Get('/members')
-  allUsers() {
+  allUsers(
+    @CurrentUser() user: Member
+  ) {
     return Member.find()
   }
 
