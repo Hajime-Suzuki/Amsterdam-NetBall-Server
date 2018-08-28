@@ -1,6 +1,6 @@
-import * as jwt from 'jsonwebtoken'
+import * as jwt from "jsonwebtoken"
 
-export const secret = process.env.JWT_SECRET || '1d2f$#*%T$#erwsf$##h}}s9h3b'
+export const secret = process.env.JWT_SECRET || "1d2f$#*%T$#erwsf$##h}}s9h3b"
 const ttl = 3600 * 24 * 12
 
 interface JwtPayload {
@@ -8,8 +8,11 @@ interface JwtPayload {
   role: string
 }
 
-export const sign = (data: JwtPayload) =>
-  jwt.sign(data, secret, { expiresIn: ttl })
+export const sign = (data: JwtPayload) => {
+  console.log(data, "HIER")
+  console.log("SIGN RUNGS")
+  return jwt.sign(data, secret, { expiresIn: ttl })
+}
 
 export const verify = (token: string): JwtPayload =>
   jwt.verify(token, secret) as JwtPayload
