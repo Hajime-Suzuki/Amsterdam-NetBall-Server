@@ -48,7 +48,7 @@ export class Member extends BaseEntity {
   dateOfBirth: Date
 
   @IsBoolean()
-  @Column('boolean')
+  @Column('boolean', { default: false })
   isCurrentMember: boolean
 
   @IsEmail()
@@ -61,11 +61,11 @@ export class Member extends BaseEntity {
   password: string
 
   @IsDate()
-  @Column('date')
+  @Column('date', { nullable: true })
   startDate: Date
 
   @IsDate()
-  @Column('date')
+  @Column('date', { nullable: true })
   endDate: Date
 
   @ManyToMany(() => Position, position => position.members)
