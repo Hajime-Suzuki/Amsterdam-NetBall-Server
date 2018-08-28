@@ -71,17 +71,17 @@ export class Member extends BaseEntity {
   @Column('date', { nullable: true })
   endDate: Date
 
-  @ManyToMany(() => Position, position => position.members)
+  @ManyToMany(() => Position, position => position.members, { eager: true })
   @JoinTable()
   positions: Position[]
 
   @ManyToOne(() => Role, role => role.members, { eager: true })
   role: Role
 
-  @ManyToOne(() => Team, team => team.members)
+  @ManyToOne(() => Team, team => team.members, { eager: true })
   team: Team
 
-  @ManyToMany(() => Activity, activity => activity.members)
+  @ManyToMany(() => Activity, activity => activity.members, { eager: true })
   @JoinTable()
   activities: Activity[]
 
