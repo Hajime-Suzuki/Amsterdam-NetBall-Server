@@ -89,8 +89,7 @@ export default class MemberController {
       query = query.andWhere(
         new Brackets(qb => {
           qb.where("positions.id = :position", { position: allPositions[0] })
-          allPositions
-            .slice(1, allPositions.length)
+          allPositions.slice(1, allPositions.length)
             .forEach(
               position =>
                 (qb = qb.orWhere("positions.id = :position", { position }))
@@ -109,8 +108,7 @@ export default class MemberController {
       query = query.andWhere(
         new Brackets(qb => {
           qb.where("committees.id = :committee", { committee: allCommittees[0] })
-          allCommittees
-            .slice(1, allCommittees.length)
+          allCommittees.slice(1, allCommittees.length)
             .forEach(
               committee =>
                 (qb = qb.orWhere("committees.id = :committee", { committee }))
