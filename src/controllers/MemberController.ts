@@ -37,6 +37,7 @@ export default class MemberController {
     const name = params.name ? params.name : '%'
     let query = Member.createQueryBuilder('member')
       .leftJoinAndSelect('member.positions', 'positions')
+      .leftJoinAndSelect('member.committees', 'committees')
       .where(
         new Brackets(qb => {
           qb.where('member.firstName ILIKE :name', {
@@ -80,47 +81,16 @@ export default class MemberController {
       })
     }
     if (params.positions) {
-      // not working
-      // query = query.andWhere("member.positions IN (:...positions)", { positions: allPositions })
-
+      // const allPositions = params.positions.split(',')
       query = query.andWhere('positions.positionName IN (:...names)', {
         names: params.positions.split(',')
       })
-
-      //  workaraound, also not working - only looks for last value in all positions
-      // query = query.andWhere(
-      //   new Brackets(qb => {
-      //     qb.where("positions.id = :position", { position: allPositions[0] })
-      //     allPositions
-      //       .slice(1, allPositions.length)
-      //       .forEach(
-      //         position =>
-      //           (qb = qb.orWhere("positions.id = :position", { position }))
-      //       )
-      //   })
-      // )
     }
     if (params.committees) {
       const allCommittees = params.committees.split(',')
-      console.log(allCommittees)
-
-      // not working
-      // query = query.andWhere("member.committees IN (:...committees)", { committees: allCommittees })
-
-      //  workaraound, also not working - only looks for last value in all committees
-      query = query.andWhere(
-        new Brackets(qb => {
-          qb.where('committees.id = :committee', {
-            committee: allCommittees[0]
-          })
-          allCommittees
-            .slice(1, allCommittees.length)
-            .forEach(
-              committee =>
-                (qb = qb.orWhere('committees.id = :committee', { committee }))
-            )
-        })
-      )
+      query = query.andWhere('committees.id IN (:...ids)', {
+        ids: allCommittees
+      })
     }
     if (params.team) {
       console.log('team')
