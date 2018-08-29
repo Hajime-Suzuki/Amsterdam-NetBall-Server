@@ -80,15 +80,11 @@ export default class MemberController {
       })
     }
     if (params.positions) {
-      console.log('positions')
-
-      const allPositions = params.positions.split(',')
-
       // not working
       // query = query.andWhere("member.positions IN (:...positions)", { positions: allPositions })
 
-      query = query.andWhere('positions.id IN (:...ids)', {
-        ids: allPositions
+      query = query.andWhere('positions.positionName IN (:...names)', {
+        names: params.positions.split(',')
       })
 
       //  workaraound, also not working - only looks for last value in all positions
@@ -103,10 +99,9 @@ export default class MemberController {
       //       )
       //   })
       // )
-
     }
     if (params.committees) {
-      const allCommittees = params.committees.split(",")
+      const allCommittees = params.committees.split(',')
       console.log(allCommittees)
 
       // not working
@@ -115,15 +110,17 @@ export default class MemberController {
       //  workaraound, also not working - only looks for last value in all committees
       query = query.andWhere(
         new Brackets(qb => {
-          qb.where("committees.id = :committee", { committee: allCommittees[0] })
-          allCommittees.slice(1, allCommittees.length)
+          qb.where('committees.id = :committee', {
+            committee: allCommittees[0]
+          })
+          allCommittees
+            .slice(1, allCommittees.length)
             .forEach(
               committee =>
-                (qb = qb.orWhere("committees.id = :committee", { committee }))
+                (qb = qb.orWhere('committees.id = :committee', { committee }))
             )
         })
       )
-
     }
     if (params.team) {
       console.log('team')
