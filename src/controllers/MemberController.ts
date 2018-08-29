@@ -87,13 +87,14 @@ export default class MemberController {
       })
     }
 
-    console.log("MEMBERS CONTROLLER RUNS BEFORE SPLIT ERROR!")
     if (positions) {
+      console.log(positions)
       const allPositions = positions.split(",")
       console.log("positions", allPositions)
       query = query.andWhere("positions.id = :position", {
         position: allPositions[0]
       })
+      console.log(query)
     }
     if (team) {
       query = query.where("member.team.id = :team", { team: team })
