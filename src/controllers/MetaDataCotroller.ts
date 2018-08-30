@@ -24,11 +24,13 @@ export default class MetaDataController {
       Team.find()
     ])
 
+
     return {
       positions,
       comittees,
       roles,
       teams
     }
+
   }
 }
