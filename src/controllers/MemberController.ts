@@ -54,7 +54,6 @@ export default class MemberController {
       })
     }
     if (params.city) {
-      console.log('params.city', params.city)
       query = query.andWhere('member.city ILIKE :city', {
         city: `%${params.city}%`
       })
@@ -112,6 +111,7 @@ export default class MemberController {
 
     const result = await query.getMany()
     const count = result.length
-    return { members: result, count }
+
+    // if (orderBy) return { members: result, count }
   }
 }
