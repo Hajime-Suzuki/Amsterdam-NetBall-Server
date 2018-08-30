@@ -1,11 +1,12 @@
-import { connectDatabase } from "./databaseConnection"
-import { createKoaServer, Action, BadRequestError } from "routing-controllers"
-import PopulateController from "./controllers/Populate"
-import ActivityController from "./controllers/adminControllers/ActivityController"
-import { verify } from "./jwt"
-import { Member } from "./entities/Member"
-import MemberController from "./controllers/MemberController"
-import LoginController from "./controllers/LoginController"
+import { connectDatabase } from './databaseConnection'
+import { createKoaServer, Action, BadRequestError } from 'routing-controllers'
+import PopulateController from './controllers/Populate'
+import ActivityController from './controllers/adminControllers/ActivityController'
+import { verify } from './jwt'
+import { Member } from './entities/Member'
+import MemberController from './controllers/MemberController'
+import LoginController from './controllers/LoginController'
+import MetaDataController from './controllers/MetaDataCotroller'
 
 export const app = createKoaServer({
   cors: true,
@@ -13,7 +14,8 @@ export const app = createKoaServer({
     PopulateController,
     ActivityController,
     MemberController,
-    LoginController
+    LoginController,
+    MetaDataController
   ],
   authorizationChecker: (action: Action) => {
     const token: string = action.request.headers.authorization
@@ -38,7 +40,7 @@ export const app = createKoaServer({
 connectDatabase()
   .then(_ => {
     app.listen(4000, () => {
-      console.log("Server is on 4000")
+      console.log('Server is on 4000')
     })
   })
   .catch(err => console.error(err))
