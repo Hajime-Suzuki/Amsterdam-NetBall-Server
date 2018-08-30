@@ -8,18 +8,21 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
-  Unique
-} from "typeorm"
+  Unique,
+  AfterLoad
+} from 'typeorm'
 
-import * as bcrypt from "bcrypt"
-import { Position } from "./Position"
-import { Role } from "./Role"
-import { Team } from "./Team"
-import { Committee } from "./Committee"
-import { IsEmail, IsString, IsDate, IsBoolean } from "class-validator"
-import { Exclude } from "class-transformer"
-import { Activity } from "./Activity"
-import { UnauthorizedError } from "../../node_modules/routing-controllers"
+import * as bcrypt from 'bcrypt'
+import { Position } from './Position'
+import { Role } from './Role'
+import { Team } from './Team'
+import { Committee } from './Committee'
+import { IsEmail, IsString, IsDate, IsBoolean } from 'class-validator'
+import { Exclude } from 'class-transformer'
+import { Activity } from './Activity'
+import { UnauthorizedError } from '../../node_modules/routing-controllers'
+
+import * as moment from 'moment'
 
 @Entity()
 // @Unique(['email'])
@@ -28,11 +31,11 @@ export class Member extends BaseEntity {
   id?: number
 
   @IsString()
-  @Column("varchar", { length: 100 })
+  @Column('varchar', { length: 100 })
   firstName: string
 
   @IsString()
-  @Column("varchar", { length: 100 })
+  @Column('varchar', { length: 100 })
   lastName: string
 
   @IsString()
@@ -40,7 +43,7 @@ export class Member extends BaseEntity {
   streetAddress: string
 
   @IsString()
-  @Column('char', { length: 6, nullable: true  })
+  @Column('char', { length: 6, nullable: true })
   postalCode: string
 
   @IsString()
@@ -56,20 +59,20 @@ export class Member extends BaseEntity {
   isCurrentMember: boolean
 
   @IsEmail()
-  @Column("varchar", { length: 255 })
+  @Column('varchar', { length: 255 })
   email: string
 
   @IsString()
-  @Column("text")
+  @Column('text')
   @Exclude({ toPlainOnly: true })
   password: string
 
   // @IsDate()
-  @Column("date", { nullable: true })
+  @Column('date', { nullable: true })
   startDate: Date
 
   // @IsDate()
-  @Column("date", { nullable: true })
+  @Column('date', { nullable: true })
   endDate: Date
 
   @ManyToMany(() => Position, position => position.members, { eager: true })
@@ -95,12 +98,24 @@ export class Member extends BaseEntity {
     this.password = await bcrypt.hash(this.password, 10)
   }
 
+  totalPoints: number = 0
+
   checkPassword(rawPassword: string): Promise<boolean> {
     return bcrypt.compare(rawPassword, this.password)
   }
 
   checkIfAdmin() {
-    if (this.role.roleName !== "admin")
-      throw new UnauthorizedError("you are not allowed")
+    if (this.role.roleName !== 'admin')
+      throw new UnauthorizedError('you are not allowed')
+  }
+
+  @AfterLoad()
+  calcuratePoints() {
+    this.totalPoints = this.activities.reduce((points, a) => {
+      console.log(a.endTime, a.startTime)
+
+      const diff = moment(a.endTime).diff(moment(a.startTime), 'hours')
+      return (points += diff)
+    }, 0)
   }
 }
