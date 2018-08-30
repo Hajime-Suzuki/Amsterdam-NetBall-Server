@@ -98,7 +98,7 @@ export class Member extends BaseEntity {
     this.password = await bcrypt.hash(this.password, 10)
   }
 
-  totalPoints: number = 0
+  activityPoints: number = 0
 
   checkPassword(rawPassword: string): Promise<boolean> {
     return bcrypt.compare(rawPassword, this.password)
@@ -111,9 +111,7 @@ export class Member extends BaseEntity {
 
   @AfterLoad()
   calcuratePoints() {
-    this.totalPoints = this.activities.reduce((points, a) => {
-      console.log(a.endTime, a.startTime)
-
+    this.activityPoints = this.activities.reduce((points, a) => {
       const diff = moment(a.endTime).diff(moment(a.startTime), 'hours')
       return (points += diff)
     }, 0)
