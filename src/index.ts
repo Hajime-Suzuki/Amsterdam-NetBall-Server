@@ -7,6 +7,7 @@ import { Member } from './entities/Member'
 import MemberController from './controllers/MemberController'
 import LoginController from './controllers/LoginController'
 import MetaDataController from './controllers/MetaDataCotroller'
+import CommitteeController from './controllers/CommitteeController'
 
 export const app = createKoaServer({
   cors: true,
@@ -15,7 +16,8 @@ export const app = createKoaServer({
     ActivityController,
     MemberController,
     LoginController,
-    MetaDataController
+    MetaDataController,
+    CommitteeController
   ],
   authorizationChecker: (action: Action) => {
     const token: string = action.request.headers.authorization
