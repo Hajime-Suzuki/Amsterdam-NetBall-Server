@@ -38,6 +38,7 @@ export default class MemberController {
     let query = Member.createQueryBuilder('member')
       .leftJoinAndSelect('member.positions', 'positions')
       .leftJoinAndSelect('member.committees', 'committees')
+      .leftJoinAndSelect('member.team', 'team')
       .where(
         new Brackets(qb => {
           qb.where('member.firstName ILIKE :name', {
@@ -82,7 +83,7 @@ export default class MemberController {
     }
     if (params.positions) {
       // const allPositions = params.positions.split(',')
-      query = query.andWhere('positions.positionName IN (:...names)', {
+      query = query.andWhere('positions.id IN (:...names)', {
         names: params.positions.split(',')
       })
     }
@@ -92,11 +93,11 @@ export default class MemberController {
         ids: allCommittees
       })
     }
-    if (params.team) {
-      console.log('team')
+    if (params.teams) {
+      console.log('teams')
 
-      query = query.andWhere('member.team.id = :team', {
-        team: params.team
+      query = query.andWhere('team.id IN (:...teams)', {
+        teams: params.teams.split(',')
       })
     }
     if (params.role) {
@@ -112,7 +113,7 @@ export default class MemberController {
     }
 
     const result = await query.getMany()
-
-    return { members: result }
+    const count = result.length
+    return { members: result, count }
   }
 }
