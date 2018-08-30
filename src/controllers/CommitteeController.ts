@@ -17,10 +17,10 @@ import { Message } from '../entities/Message'
 @JsonController()
 export default class CommitteeController {
 
-  @Post('/committees')
-  addCommittee(@Body() data: Committee) {
-    return Committee.create(data).save()
-  }
+  // @Post('/committees')
+  // addCommittee(@Body() data: Committee) {
+  //   return Committee.create(data).save()
+  // }
 
   // @Authorized()
   @Get('/committees/:id([0-9]+)')
@@ -35,15 +35,35 @@ export default class CommitteeController {
   // @Authorized()
   @Post('/committees/:id([0-9]+)')
   async addMessage(
-    @Body() partial: Message,
-    @Param('id') committeeId: number,
+    @Body() message: Message,
+    @Param('id') id: number,
     @CurrentUser() user: Member
     ) {
-    const thisCommittee = await Committee.findOne( committeeId )
+    console.log('message', message)
+    const thisCommittee = await Committee.findOne( id )
     if (!thisCommittee) throw new NotFoundError(`Committee does not exist`)
-    partial.committee = thisCommittee
+    message.committee = thisCommittee
 
-    return Message.create(partial).save()
+    return Message.create(message).save()
   }
+
+
+
+  // @Authorized()
+  // @Post('/tickets/:id')
+  // @HttpCode(201)
+  // async createTicket(
+  //   @Body() ticket: Ticket,
+  //   @Param('id') eventId,
+  //   @CurrentUser() user: User
+  // ) {
+  //   const thisEvent = await Event.findOne( eventId )
+  //   if (!thisEvent) throw new NotFoundError(`Event does not exist`)
+
+  //   ticket.event = thisEvent
+  //   ticket.user = user
+  //   ticket.price = parseFloat(ticket.price.toString())
+  //   return ticket.save()
+  // }
 
 }

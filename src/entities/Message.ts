@@ -10,7 +10,7 @@ import { Committee } from './Committee'
 @Entity()
 export class Message extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: number
+  id?: number
 
   @Column('text')
   body: string
