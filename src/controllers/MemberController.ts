@@ -39,6 +39,7 @@ export default class MemberController {
       .leftJoinAndSelect('member.positions', 'positions')
       .leftJoinAndSelect('member.committees', 'committees')
       .leftJoinAndSelect('member.team', 'team')
+      .leftJoinAndSelect('member.activities', 'activity')
       .where(
         new Brackets(qb => {
           qb.where('member.firstName ILIKE :name', {
@@ -94,8 +95,6 @@ export default class MemberController {
       })
     }
     if (params.teams) {
-      console.log('teams')
-
       query = query.andWhere('team.id IN (:...teams)', {
         teams: params.teams.split(',')
       })
@@ -103,7 +102,6 @@ export default class MemberController {
     if (params.role) {
       query = query.andWhere('member.role.id = :role', { role: params.role })
     }
-    console.log(params)
 
     if (params.currentMember) {
       query = query.andWhere(
