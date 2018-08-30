@@ -112,6 +112,6 @@ export default class MemberController {
     const result = await query.getMany()
     const count = result.length
 
-    // if (orderBy) return { members: result, count }
+    return { members: result, count }
   }
 }
