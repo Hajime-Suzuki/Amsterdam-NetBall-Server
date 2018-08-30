@@ -24,12 +24,12 @@ export default class CommitteeController {
 
   // @Authorized()
   @Get('/committees/:id([0-9]+)')
-  getCommittee(
+  async getCommittee(
     @Param('id') id: number,
     @CurrentUser() user: Member
     ) {
-    const member = Committee.findOne(id)
-    return member
+    const committee = await Committee.findOne(id)
+    return committee
   }
 
   // @Authorized()
@@ -42,7 +42,6 @@ export default class CommitteeController {
     const thisCommittee = await Committee.findOne( committeeId )
     if (!thisCommittee) throw new NotFoundError(`Committee does not exist`)
     partial.committee = thisCommittee
-    console.log('partial', partial)
 
     return Message.create(partial).save()
   }
