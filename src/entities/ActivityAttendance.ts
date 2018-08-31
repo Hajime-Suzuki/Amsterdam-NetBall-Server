@@ -21,7 +21,7 @@ export class ActivityAttendance extends BaseEntity {
   id: number
 
   @Column('boolean', { default: false })
-  isParticipated: boolean
+  isAttended: boolean
 
   @ManyToOne(() => Member, member => member.isAttended)
   member: Member

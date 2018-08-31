@@ -117,8 +117,20 @@ export default class MemberController {
 
   @Get('/test')
   async test() {
-    const user = await Member.findOne(1)
-    // user.
-    return user
+    const members = await Member.find()
+    const now = new Date()
+    members.forEach(u => {
+      const activities = u.isAttended
+
+      const endedActivity = activities.filter(act => act.activity.endTime < now)
+      if (!endedActivity.length) return (u.attendanceRate = null)
+
+      const totalAttended = endedActivity.filter(act => act.isAttended === true)
+
+      u.attendanceRate = totalAttended.length / endedActivity.length
+    })
+
+    await Member.save(members)
+    return 'updated'
   }
 }

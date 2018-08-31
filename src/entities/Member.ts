@@ -99,6 +99,9 @@ export class Member extends BaseEntity {
   @OneToMany(() => ActivityAttendance, actAtt => actAtt.member, { eager: true })
   isAttended: ActivityAttendance[]
 
+  @Column('decimal', { nullable: true })
+  attendanceRate: number
+
   @BeforeInsert()
   async setPassword() {
     this.password = await bcrypt.hash(this.password, 10)
