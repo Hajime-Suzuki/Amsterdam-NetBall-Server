@@ -82,6 +82,9 @@ export class Member extends BaseEntity {
   @JoinTable()
   positions: Position[]
 
+  @Column({ default: 0 })
+  activityPoints: number
+
   @ManyToOne(() => Role, role => role.members, { eager: true })
   role: Role
 
@@ -106,8 +109,6 @@ export class Member extends BaseEntity {
   async setPassword() {
     this.password = await bcrypt.hash(this.password, 10)
   }
-
-  activityPoints: number = 0
 
   checkPassword(rawPassword: string): Promise<boolean> {
     return bcrypt.compare(rawPassword, this.password)

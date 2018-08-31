@@ -12,6 +12,7 @@ import {
 import { getRepository, Brackets } from 'typeorm'
 import { Member } from '../entities/Member'
 import { Position } from '../entities/Position'
+import * as moment from 'moment'
 
 @JsonController()
 export default class MemberController {
@@ -128,9 +129,25 @@ export default class MemberController {
       const totalAttended = endedActivity.filter(act => act.isAttended === true)
 
       u.attendanceRate = totalAttended.length / endedActivity.length
+
+      if (!u.attendanceRate) return
+
+      const a = totalAttended.reduce((points, act) => {
+        // console.log(act)
+
+        const diff = moment(act.activity.endTime).diff(
+          moment(act.activity.startTime),
+          'hours'
+        )
+
+        return (points += diff)
+        // return points
+      }, 0)
+      console.log(a)
     })
 
-    await Member.save(members)
+    // await Member.save(members)
+
     return 'updated'
   }
 }
