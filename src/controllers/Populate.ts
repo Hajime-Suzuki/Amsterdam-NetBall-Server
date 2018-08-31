@@ -31,6 +31,16 @@ export default class PopulateController {
     // })
     // await Member.save(users)
 
+    const activities = await Activity.find()
+
+    activities.forEach(u => {
+      const startDate = faker.date.recent(3)
+      const endDate = faker.date.between(startDate, '2018-09-01')
+      u.startTime = startDate
+      u.endTime = endDate
+    })
+    await Activity.save(activities)
+
     // let role = await Role.findOne({ where: { name: 'member' } })
     // if (!role) {
     //   const r1 = Role.create({

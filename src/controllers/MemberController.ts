@@ -12,6 +12,7 @@ import {
 import { getRepository, Brackets } from 'typeorm'
 import { Member } from '../entities/Member'
 import { Position } from '../entities/Position'
+import * as moment from 'moment'
 
 @JsonController()
 export default class MemberController {
@@ -39,6 +40,7 @@ export default class MemberController {
       .leftJoinAndSelect('member.positions', 'positions')
       .leftJoinAndSelect('member.committees', 'committees')
       .leftJoinAndSelect('member.team', 'team')
+      .leftJoinAndSelect('member.activities', 'activity')
       .where(
         new Brackets(qb => {
           qb.where('member.firstName ILIKE :name', {
@@ -53,7 +55,6 @@ export default class MemberController {
       })
     }
     if (params.city) {
-      console.log('params.city', params.city)
       query = query.andWhere('member.city ILIKE :city', {
         city: `%${params.city}%`
       })
@@ -94,8 +95,6 @@ export default class MemberController {
       })
     }
     if (params.teams) {
-      console.log('teams')
-
       query = query.andWhere('team.id IN (:...teams)', {
         teams: params.teams.split(',')
       })
@@ -103,7 +102,6 @@ export default class MemberController {
     if (params.role) {
       query = query.andWhere('member.role.id = :role', { role: params.role })
     }
-    console.log(params)
 
     if (params.currentMember) {
       query = query.andWhere(
@@ -114,6 +112,42 @@ export default class MemberController {
 
     const result = await query.getMany()
     const count = result.length
+
     return { members: result, count }
+  }
+
+  @Get('/test')
+  async test() {
+    const members = await Member.find()
+    const now = new Date()
+    members.forEach(u => {
+      const activities = u.isAttended
+
+      const endedActivity = activities.filter(act => act.activity.endTime < now)
+      if (!endedActivity.length) return (u.attendanceRate = null)
+
+      const totalAttended = endedActivity.filter(act => act.isAttended === true)
+
+      u.attendanceRate = totalAttended.length / endedActivity.length
+
+      if (!u.attendanceRate) return
+
+      const a = totalAttended.reduce((points, act) => {
+        // console.log(act)
+
+        const diff = moment(act.activity.endTime).diff(
+          moment(act.activity.startTime),
+          'hours'
+        )
+
+        return (points += diff)
+        // return points
+      }, 0)
+      console.log(a)
+    })
+
+    // await Member.save(members)
+
+    return 'updated'
   }
 }

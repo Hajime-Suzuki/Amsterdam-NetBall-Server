@@ -8,6 +8,7 @@ import MemberController from './controllers/MemberController'
 import LoginController from './controllers/LoginController'
 import MetaDataController from './controllers/MetaDataCotroller'
 import CommitteeController from './controllers/CommitteeController'
+import { updateAttendanceRate } from './controllers/libs/updateAttendanceRate'
 
 export const app = createKoaServer({
   cors: true,
@@ -44,5 +45,6 @@ connectDatabase()
     app.listen(4000, () => {
       console.log('Server is on 4000')
     })
+    setInterval(updateAttendanceRate, 1000 * 3600 * 24)
   })
   .catch(err => console.error(err))
