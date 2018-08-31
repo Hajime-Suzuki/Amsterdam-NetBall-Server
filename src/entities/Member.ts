@@ -16,6 +16,7 @@ import { Position } from "./Position"
 import { Role } from "./Role"
 import { Team } from "./Team"
 import { Committee } from "./Committee"
+import { Message } from "./Message"
 import { IsEmail, IsString, IsDate, IsBoolean } from "class-validator"
 import { Exclude } from "class-transformer"
 import { Activity } from "./Activity"
@@ -85,6 +86,9 @@ export class Member extends BaseEntity {
   @ManyToMany(() => Committee, committee => committee.members, { eager: true })
   @JoinTable()
   committees: Committee[]
+
+  @OneToMany(() => Message, message => message.member)
+  messages: Message[]
 
   @ManyToMany(() => Activity, activity => activity.members, { eager: true })
   @JoinTable()

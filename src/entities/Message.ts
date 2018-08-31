@@ -3,9 +3,11 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne
+  ManyToOne,
+  JoinColumn
 } from 'typeorm'
 import { Committee } from './Committee'
+import { Member } from './Member'
 
 @Entity()
 export class Message extends BaseEntity {
@@ -17,5 +19,8 @@ export class Message extends BaseEntity {
 
   @ManyToOne(() => Committee, committee => committee.messages)
   committee: Committee
+
+  @ManyToOne(() => Member, member => member.messages)
+  member: Member
 
 }
