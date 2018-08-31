@@ -4,10 +4,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   OneToMany,
-  ManyToMany
+  ManyToMany,
+  JoinTable
 } from 'typeorm'
 import { Team } from './Team'
 import { Member } from './Member'
+import { ActivityAttendance } from './ActivityAttendance'
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -34,4 +36,7 @@ export class Activity extends BaseEntity {
 
   @ManyToMany(() => Member, member => member.activities)
   members: Member[]
+
+  @OneToMany(() => ActivityAttendance, actAtt => actAtt.activity)
+  isAttended: ActivityAttendance[]
 }

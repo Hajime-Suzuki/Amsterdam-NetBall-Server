@@ -9,7 +9,9 @@ import {
   JoinTable,
   ManyToOne,
   Unique,
-  AfterLoad
+  AfterLoad,
+  OneToOne,
+  JoinColumn
 } from 'typeorm'
 
 import * as bcrypt from 'bcrypt'
@@ -20,9 +22,10 @@ import { Committee } from './Committee'
 import { IsEmail, IsString, IsDate, IsBoolean } from 'class-validator'
 import { Exclude } from 'class-transformer'
 import { Activity } from './Activity'
-import { UnauthorizedError } from '../../node_modules/routing-controllers'
+import { UnauthorizedError } from 'routing-controllers'
 
 import * as moment from 'moment'
+import { ActivityAttendance } from './ActivityAttendance'
 
 @Entity()
 // @Unique(['email'])
@@ -92,6 +95,9 @@ export class Member extends BaseEntity {
   @ManyToMany(() => Activity, activity => activity.members, { eager: true })
   @JoinTable()
   activities: Activity[]
+
+  @OneToMany(() => ActivityAttendance, actAtt => actAtt.member, { eager: true })
+  isAttended: ActivityAttendance[]
 
   @BeforeInsert()
   async setPassword() {

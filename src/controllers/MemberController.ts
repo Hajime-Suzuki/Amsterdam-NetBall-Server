@@ -114,4 +114,11 @@ export default class MemberController {
 
     return { members: result, count }
   }
+
+  @Get('/test')
+  async test() {
+    const user = await Member.findOne(1)
+    // user.
+    return user
+  }
 }
