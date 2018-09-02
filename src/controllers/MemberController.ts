@@ -16,6 +16,12 @@ import * as moment from 'moment'
 
 @JsonController()
 export default class MemberController {
+
+  @Get('/')
+  top(){
+    return 'Amsterdam Netball'
+  }
+
   @Post('/signup')
   signup(@Body() data: Member) {
     console.log(data)
