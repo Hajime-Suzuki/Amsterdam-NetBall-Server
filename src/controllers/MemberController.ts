@@ -15,6 +15,7 @@ import { getRepository, Brackets } from "typeorm"
 import { Member } from "../entities/Member"
 import { Position } from "../entities/Position"
 import * as moment from "moment"
+import { ifError } from "assert"
 
 @JsonController()
 export default class MemberController {
@@ -126,6 +127,27 @@ export default class MemberController {
       )
     }
 
+    const setDescAsc = params => {
+      return params.order === "DESC" ? "DESC" : "ASC"
+    }
+
+    //default: order by name
+    if (!params.orderType && !params.order) {
+      query.orderBy("member.firstName")
+    }
+
+    if (params.orderType === "name") {
+      query.orderBy("member.firstName", setDescAsc(params))
+    }
+
+    if (params.orderType === "points") {
+      query.orderBy("member.activityPoints", setDescAsc(params), "NULLS LAST")
+    }
+
+    if (params.orderType === "activityRate") {
+      query.orderBy("member.attendanceRate", setDescAsc(params), "NULLS LAST")
+    }
+
     const result = await query.getMany()
     const count = result.length
 
@@ -140,29 +162,28 @@ export default class MemberController {
       const activities = u.isAttended
 
       const endedActivity = activities.filter(act => act.activity.endTime < now)
-      if (!endedActivity.length) return (u.attendanceRate = null)
+      if (!endedActivity.length) {
+        u.attendanceRate = null
+        u.activityPoints = null
+        return
+      }
 
       const totalAttended = endedActivity.filter(act => act.isAttended === true)
 
       u.attendanceRate = totalAttended.length / endedActivity.length
 
-      if (!u.attendanceRate) return
+      if (!u.attendanceRate) return (u.activityPoints = 0)
 
-      const a = totalAttended.reduce((points, act) => {
-        // console.log(act)
-
+      u.activityPoints = totalAttended.reduce((points, act) => {
         const diff = moment(act.activity.endTime).diff(
           moment(act.activity.startTime),
           "hours"
         )
-
         return (points += diff)
-        // return points
       }, 0)
-      console.log(a)
     })
 
-    // await Member.save(members)
+    await Member.save(members)
 
     return "updated"
   }
