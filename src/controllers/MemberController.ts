@@ -14,6 +14,7 @@ import { Member } from '../entities/Member'
 import { Position } from '../entities/Position'
 import * as moment from 'moment'
 import { ifError } from 'assert'
+import { setMemberOrder } from '../libs/setMemberOrder'
 
 @JsonController()
 export default class MemberController {
@@ -113,28 +114,7 @@ export default class MemberController {
       }
     }
 
-    const setDescAsc = params => {
-      return params.order === 'DESC' ? 'DESC' : 'ASC'
-    }
-
-    // console.log(params)
-
-    //default: order by name
-    if (!params.orderType && !params.order) {
-      query.orderBy('member.firstName')
-    }
-
-    if (params.orderType === 'name') {
-      query.orderBy('member.firstName', setDescAsc(params))
-    }
-
-    if (params.orderType === 'points') {
-      query.orderBy('member.activityPoints', setDescAsc(params), 'NULLS LAST')
-    }
-
-    if (params.orderType === 'activityRate') {
-      query.orderBy('member.attendanceRate', setDescAsc(params), 'NULLS LAST')
-    }
+    setMemberOrder(query, params)
 
     const result = await query.getMany()
     const count = result.length
