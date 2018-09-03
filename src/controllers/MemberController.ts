@@ -10,15 +10,13 @@ import {
   QueryParams,
   Patch,
   BadRequestError
-
-} from 'routing-controllers'
-import { getRepository, Brackets } from 'typeorm'
-import { Member } from '../entities/Member'
-import { Position } from '../entities/Position'
-import * as moment from 'moment'
-import { ifError } from 'assert'
-import { setMemberOrder } from '../libs/setMemberOrder'
-
+} from "routing-controllers"
+import { getRepository, Brackets } from "typeorm"
+import { Member } from "../entities/Member"
+import { Position } from "../entities/Position"
+import * as moment from "moment"
+import { ifError } from "assert"
+import { setMemberOrder } from "../libs/setMemberOrder"
 
 @JsonController()
 export default class MemberController {
@@ -37,7 +35,7 @@ export default class MemberController {
 
   @Authorized()
   @Patch("/members/:memberId([0-9]+)/:activityId([0-9]+)")
-  async updateUser(
+  async joinActivity(
     @Param("memberId") memberId: number,
     @Param("activityId") activityId: number,
     @CurrentUser() user: Member | null
@@ -45,6 +43,24 @@ export default class MemberController {
     const member = await Member.findOne(memberId)
     const activity = await Activity.findOne(activityId)
     member.activities.push(activity)
+    await member.save()
+    return member
+  }
+
+  @Authorized()
+  @Patch("/members/unsubscribe/:memberId([0-9]+)/:activityId([0-9]+)")
+  async unsubscribeActivity(
+    @Param("memberId") memberId: number,
+    @Param("activityId") activityId: number,
+    @CurrentUser() user: Member | null
+  ) {
+    const member = await Member.findOne(memberId)
+
+    member.activities.splice(
+      member.activities.findIndex(activity => activityId === activity.id),
+      1
+    )
+
     await member.save()
     return member
   }
@@ -123,12 +139,11 @@ export default class MemberController {
       query = query.andWhere("member.role.id = :role", { role: params.role })
     }
 
-
     if (params.currentMemberOption) {
       const option = params.currentMemberOption
-      if (option !== 'All') {
-        query = query.andWhere('member.isCurrentMember = :membership', {
-          membership: option === 'currentMemberOnly'
+      if (option !== "All") {
+        query = query.andWhere("member.isCurrentMember = :membership", {
+          membership: option === "currentMemberOnly"
         })
       }
     }
