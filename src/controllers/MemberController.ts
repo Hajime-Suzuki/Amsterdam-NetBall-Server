@@ -104,16 +104,20 @@ export default class MemberController {
       query = query.andWhere('member.role.id = :role', { role: params.role })
     }
 
-    if (params.currentMember) {
-      query = query.andWhere(
-        'member.endDate > :date AND member.isCurrentMember = :membership',
-        { date: new Date(), membership: true }
-      )
+    if (params.currentMemberOption) {
+      const option = params.currentMemberOption
+      if (option !== 'All') {
+        query = query.andWhere('member.isCurrentMember = :membership', {
+          membership: option === 'currentMemberOnly'
+        })
+      }
     }
 
     const setDescAsc = params => {
       return params.order === 'DESC' ? 'DESC' : 'ASC'
     }
+
+    // console.log(params)
 
     //default: order by name
     if (!params.orderType && !params.order) {
