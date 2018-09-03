@@ -23,7 +23,6 @@ import { IsEmail, IsString, IsDate, IsBoolean } from 'class-validator'
 import { Exclude } from 'class-transformer'
 import { Activity } from './Activity'
 import { UnauthorizedError } from 'routing-controllers'
-import * as moment from 'moment'
 import { ActivityAttendance } from './ActivityAttendance'
 
 @Entity()
@@ -81,7 +80,7 @@ export class Member extends BaseEntity {
   @JoinTable()
   positions: Position[]
 
-  @Column({ default: 0 })
+  @Column({ nullable: true })
   activityPoints: number
 
   @ManyToOne(() => Role, role => role.members, { eager: true })
@@ -121,11 +120,11 @@ export class Member extends BaseEntity {
       throw new UnauthorizedError('you are not allowed')
   }
 
-  @AfterLoad()
-  calcuratePoints() {
-    this.activityPoints = this.activities.reduce((points, a) => {
-      const diff = moment(a.endTime).diff(moment(a.startTime), 'hours')
-      return (points += diff)
-    }, 0)
-  }
+  // @AfterLoad()
+  // calcuratePoints() {
+  //   this.activityPoints = this.activities.reduce((points, a) => {
+  //     const diff = moment(a.endTime).diff(moment(a.startTime), 'hours')
+  //     return (points += diff)
+  //   }, 0)
+  // }
 }

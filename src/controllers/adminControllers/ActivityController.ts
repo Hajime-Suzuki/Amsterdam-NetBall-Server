@@ -10,19 +10,20 @@ import {
   Delete,
   CurrentUser,
   HttpCode
-} from 'routing-controllers'
-import { Member } from '../../entities/Member'
-import { Activity } from '../../entities/Activity'
+} from "routing-controllers"
+import { Member } from "../../entities/Member"
+import { Activity } from "../../entities/Activity"
 
-@JsonController('/admin/activity')
+@JsonController("/admin/activity")
 export default class ActivityController {
-  @Get('/')
+  @Get("/")
   getActivities() {
+    console.log("Activity runs")
     return Activity.find()
   }
 
   @Authorized()
-  @Post('/')
+  @Post("/")
   @HttpCode(201)
   createActivity(@CurrentUser() member: Member, @Body() data: Activity) {
     member.checkIfAdmin()
@@ -30,26 +31,26 @@ export default class ActivityController {
   }
 
   @Authorized()
-  @Patch('/:id')
+  @Patch("/:id")
   async editActivity(
     @CurrentUser() member: Member,
-    @Param('id') id: number,
+    @Param("id") id: number,
     @Body() data: Activity
   ) {
     member.checkIfAdmin()
     const activity = await Activity.findOne({ id })
-    if (!activity) throw new NotFoundError('activity not found')
+    if (!activity) throw new NotFoundError("activity not found")
 
     await Activity.update(id, data)
     return Activity.findOne({ id })
   }
 
   @Authorized()
-  @Delete('/:id')
-  async deleteActivity(@CurrentUser() member: Member, @Param('id') id: number) {
+  @Delete("/:id")
+  async deleteActivity(@CurrentUser() member: Member, @Param("id") id: number) {
     member.checkIfAdmin()
     const activity = await Activity.findOne({ id })
-    if (!activity) throw new NotFoundError('activity not found')
+    if (!activity) throw new NotFoundError("activity not found")
     return activity.remove()
   }
 }
