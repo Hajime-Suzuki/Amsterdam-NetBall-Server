@@ -20,7 +20,7 @@ export class Message extends BaseEntity {
   @ManyToOne(() => Committee, committee => committee.messages)
   committee: Committee
 
-  @ManyToOne(() => Member, member => member.messages)
+  @ManyToOne(() => Member, member => member.messages, { eager: true })
   member: Member
 
 }

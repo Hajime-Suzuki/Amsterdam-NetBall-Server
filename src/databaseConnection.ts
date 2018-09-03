@@ -59,7 +59,7 @@ export const connectDatabase = async () => {
   console.log('Connected to Postgres with TypeORM')
   // await connection.undoLastMigration()
   // await connection.runMigrations()
-  console.log('Migration Done')
+  // console.log('Migration Done')
   return connection
 }
 

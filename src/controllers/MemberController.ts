@@ -1,3 +1,4 @@
+import { Activity } from './../entities/Activity'
 import {
   JsonController,
   Post,
@@ -7,12 +8,17 @@ import {
   Authorized,
   CurrentUser,
   QueryParams,
+  Patch,
   BadRequestError
-} from 'routing-controllers'
-import { getRepository, Brackets } from 'typeorm'
-import { Member } from '../entities/Member'
-import { Position } from '../entities/Position'
-import * as moment from 'moment'
+
+} from "routing-controllers"
+import { getRepository, Brackets } from "typeorm"
+import { Member } from "../entities/Member"
+import { Position } from "../entities/Position"
+import * as moment from "moment"
+import { ifError } from "assert"
+import { setMemberOrder } from "../libs/setMemberOrder"
+
 
 @JsonController()
 export default class MemberController {
@@ -32,6 +38,41 @@ export default class MemberController {
   @Get('/members/:id([0-9]+)')
   getUser(@Param('id') id: number, @CurrentUser() user: Member) {
     const member = Member.findOne(id)
+
+    return member
+  }
+
+  @Authorized()
+
+  @Patch("/members/:memberId([0-9]+)/:activityId([0-9]+)")
+  async joinActivity(
+    @Param("memberId") memberId: number,
+    @Param("activityId") activityId: number,
+
+    @CurrentUser() user: Member | null
+  ) {
+    const member = await Member.findOne(memberId)
+    const activity = await Activity.findOne(activityId)
+    member.activities.push(activity)
+    await member.save()
+    return member
+  }
+
+  @Authorized()
+  @Patch("/members/unsubscribe/:memberId([0-9]+)/:activityId([0-9]+)")
+  async unsubscribeActivity(
+    @Param("memberId") memberId: number,
+    @Param("activityId") activityId: number,
+    @CurrentUser() user: Member | null
+  ) {
+    const member = await Member.findOne(memberId)
+
+    member.activities.splice(
+      member.activities.findIndex(activity => activityId === activity.id),
+      1
+    )
+
+    await member.save()
     return member
   }
 
@@ -43,6 +84,20 @@ export default class MemberController {
   ) {
     const name = params.name ? params.name : '%'
     let query = Member.createQueryBuilder('member')
+
+    if (user.role.roleName !== 'admin') {
+      query.select([
+        'member.id',
+        'member.firstName',
+        'member.lastName',
+        'member.isCurrentMember',
+        'positions',
+        'committees',
+        'activity'
+      ])
+    }
+
+    query
       .leftJoinAndSelect('member.positions', 'positions')
       .leftJoinAndSelect('member.committees', 'committees')
       .leftJoinAndSelect('member.team', 'team')
@@ -65,11 +120,12 @@ export default class MemberController {
         city: `%${params.city}%`
       })
     }
-    if (params.isCurrentMember) {
-      query = query.andWhere('member.isCurrentMember = :isCurrentMember', {
-        isCurrentMember: params.isCurrentMember
-      })
-    }
+    // if (params.isCurrentMember) {
+    //   query = query.andWhere('member.isCurrentMember = :isCurrentMember', {
+    //     isCurrentMember: params.isCurrentMember
+    //   })
+    // }
+
     if (params.dateOfBirth) {
       const timestamp = new Date(params.dateOfBirth)
       query = query.andWhere('member.dateOfBirth = :dateOfBirth', {
@@ -109,16 +165,26 @@ export default class MemberController {
       query = query.andWhere('member.role.id = :role', { role: params.role })
     }
 
-    if (params.currentMember) {
-      query = query.andWhere(
-        'member.endDate > :date AND member.isCurrentMember = :membership',
-        { date: new Date(), membership: true }
-      )
+
+    if (user.role.roleName === 'admin' && params.currentMemberOption) {
+      const option = params.currentMemberOption
+
+      if (params.currentMemberOption !== 'All') {
+        query = query.andWhere('member.isCurrentMember = :membership', {
+          membership: option === 'currentMemberOnly'
+
+        })
+      }
+    } else {
+      query = query.andWhere('member.isCurrentMember = :membership', {
+        membership: true
+      })
     }
+
+    setMemberOrder(query, params)
 
     const result = await query.getMany()
     const count = result.length
-
     return { members: result, count }
   }
 
@@ -130,29 +196,28 @@ export default class MemberController {
       const activities = u.isAttended
 
       const endedActivity = activities.filter(act => act.activity.endTime < now)
-      if (!endedActivity.length) return (u.attendanceRate = null)
+      if (!endedActivity.length) {
+        u.attendanceRate = null
+        u.activityPoints = null
+        return
+      }
 
       const totalAttended = endedActivity.filter(act => act.isAttended === true)
 
       u.attendanceRate = totalAttended.length / endedActivity.length
 
-      if (!u.attendanceRate) return
+      if (!u.attendanceRate) return (u.activityPoints = 0)
 
-      const a = totalAttended.reduce((points, act) => {
-        // console.log(act)
-
+      u.activityPoints = totalAttended.reduce((points, act) => {
         const diff = moment(act.activity.endTime).diff(
           moment(act.activity.startTime),
           'hours'
         )
-
         return (points += diff)
-        // return points
       }, 0)
-      console.log(a)
     })
 
-    // await Member.save(members)
+    await Member.save(members)
 
     return 'updated'
   }

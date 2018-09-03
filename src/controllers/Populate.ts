@@ -22,24 +22,24 @@ export default class PopulateController {
 
     // const endDate = faker.date.between(startDate, '2019-01-01')
 
-    // const users = await Member.find()
-    // users.forEach(u => {
-    //   const startDate = faker.date.between('2017-01-01', new Date())
-    //   const endDate = faker.date.between(startDate, '2019-01-01')
-    //   u.endDate = endDate
-    //   u.startDate = startDate
-    // })
-    // await Member.save(users)
-
-    const activities = await Activity.find()
-
-    activities.forEach(u => {
-      const startDate = faker.date.recent(3)
-      const endDate = faker.date.between(startDate, '2018-09-01')
-      u.startTime = startDate
-      u.endTime = endDate
+    const users = await Member.find()
+    users.forEach(u => {
+      const startDate = faker.date.between('2018-01-01', new Date())
+      const endDate = faker.date.between(startDate, '2019-01-01')
+      u.endDate = endDate
+      u.startDate = startDate
     })
-    await Activity.save(activities)
+    await Member.save(users)
+
+    // const activities = await Activity.find()
+
+    // activities.forEach(u => {
+    //   const startDate = faker.date.recent(3)
+    //   const endDate = faker.date.between(startDate, '2018-09-01')
+    //   u.startTime = startDate
+    //   u.endTime = endDate
+    // })
+    // await Activity.save(activities)
 
     // let role = await Role.findOne({ where: { name: 'member' } })
     // if (!role) {

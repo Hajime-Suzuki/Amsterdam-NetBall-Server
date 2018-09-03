@@ -19,7 +19,6 @@ import { Message } from '../entities/Message'
 
 @JsonController()
 export default class CommitteeController {
-
   // @Post('/committees')
   // addCommittee(@Body() data: Committee) {
   //   return Committee.create(data).save()
@@ -27,14 +26,18 @@ export default class CommitteeController {
 
   // @Authorized()
   @Get('/committees/:id([0-9]+)')
+
   async getCommittee(
     @Param('id') id: number,
     @CurrentUser() user: Member
     ) {
-    let committee = await Committee.createQueryBuilder("c")
-       .leftJoinAndSelect("c.messages", "m")
-       .leftJoinAndSelect("m.member", "member")
-       .getOne()
+    // let committee = await Committee.createQueryBuilder("c")
+    //    .leftJoinAndSelect("c.messages", "m")
+    //    .leftJoinAndSelect("m.member", "member")
+    //    .getOne()
+
+    const committee = await Committee.findOne(id)
+
     return committee
   }
 
@@ -44,41 +47,52 @@ export default class CommitteeController {
     @Body() message: Message,
     @Param('id') id: number,
     @CurrentUser() user: Member
+
     ) {
+    console.log('message', message)
+
     const thisCommittee = await Committee.findOne( id )
+
     if (!thisCommittee) throw new NotFoundError(`Committee does not exist`)
     message.committee = thisCommittee
+    message.member = user
 
     return Message.create(message).save()
   }
 
-  // @Authorized()
-  @Put('/committees/:id([0-9]+)')
+  @Authorized()
+  @Put('/messages/:id([0-9]+)/:messageId([0-9]+)')
   async updateMessage(
     @Body() update: Message,
     @Param('id') id: number,
+    @Param('messageId') messageId: number,
     @CurrentUser() user: Member
+
     ) {
-    const message = await Message.findOne(id)
+    console.log('update', update)
+    const thisMessage = await Message.findOne(messageId)
 
-    if (!message) throw new NotFoundError('Cannot find ticket')
-    if (message.member.id !== user.id) throw new ForbiddenError('You can only edit your own content!')
+    if (!thisMessage) throw new NotFoundError('Cannot find ticket')
 
-    Object.keys(message).forEach( (key)=>{
-      if (update[key]) {
-        message[key] = update[key]
+    console.log('update', update)
+    Object.keys(thisMessage).forEach( (key)=>{
+      if (update[key] && key!=='id') {
+        thisMessage[key] = update[key]
+
       }
     })
-    return message.save()
+    return thisMessage.save()
   }
 
   // @Authorized()
-  @Delete('/committees/:id([0-9]+)')
-  deleteMessage(
-    @Param("id") id: number
-  ) {
-     return Message.delete(id);
-  }
 
+  @Delete('/committees/:id([0-9]+)/:messageId([0-9]+)')
+  async deleteMessage(
+    @Param("id") id: number,
+    @Param("messageId") messageId: number
+  ) {
+     const message = await Message.findOne(messageId)
+     return Message.delete(messageId);
+  }
 
 }
