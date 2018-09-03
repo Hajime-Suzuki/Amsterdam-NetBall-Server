@@ -8,7 +8,8 @@ import MemberController from './controllers/MemberController'
 import LoginController from './controllers/LoginController'
 import MetaDataController from './controllers/MetaDataCotroller'
 import CommitteeController from './controllers/CommitteeController'
-import { updateAttendanceRate } from './controllers/libs/updateAttendanceRate'
+
+import { updateAttendanceRate } from './libs/updateAttendanceRate'
 
 export const app = createKoaServer({
   cors: true,
