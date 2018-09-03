@@ -51,6 +51,7 @@ export default class CommitteeController {
     const thisCommittee = await Committee.findOne( id )
     if (!thisCommittee) throw new NotFoundError(`Committee does not exist`)
     message.committee = thisCommittee
+    message.member = user
 
     return Message.create(message).save()
   }
@@ -76,12 +77,13 @@ export default class CommitteeController {
   }
 
   // @Authorized()
-  @Delete('/committees/:id([0-9]+)')
-  deleteMessage(
-    @Param("id") id: number
+  @Delete('/committees/:id([0-9]+)/:messageId([0-9]+)')
+  async deleteMessage(
+    @Param("id") id: number,
+    @Param("messageId") messageId: number
   ) {
-     return Message.delete(id);
+     const message = await Message.findOne(messageId)
+     return Message.delete(messageId);
   }
-
 
 }
