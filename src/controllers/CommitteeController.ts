@@ -19,7 +19,6 @@ import { Message } from '../entities/Message'
 
 @JsonController()
 export default class CommitteeController {
-
   // @Post('/committees')
   // addCommittee(@Body() data: Committee) {
   //   return Committee.create(data).save()
@@ -27,14 +26,11 @@ export default class CommitteeController {
 
   // @Authorized()
   @Get('/committees/:id([0-9]+)')
-  async getCommittee(
-    @Param('id') id: number,
-    @CurrentUser() user: Member
-    ) {
-    let committee = await Committee.createQueryBuilder("c")
-       .leftJoinAndSelect("c.messages", "m")
-       .leftJoinAndSelect("m.member", "member")
-       .getOne()
+  async getCommittee(@Param('id') id: number, @CurrentUser() user: Member) {
+    let committee = await Committee.createQueryBuilder('c')
+      .leftJoinAndSelect('c.messages', 'm')
+      .leftJoinAndSelect('m.member', 'm')
+      .getOne()
     return committee
   }
 
@@ -44,8 +40,8 @@ export default class CommitteeController {
     @Body() message: Message,
     @Param('id') id: number,
     @CurrentUser() user: Member
-    ) {
-    const thisCommittee = await Committee.findOne( id )
+  ) {
+    const thisCommittee = await Committee.findOne(id)
     if (!thisCommittee) throw new NotFoundError(`Committee does not exist`)
     message.committee = thisCommittee
 
@@ -58,13 +54,14 @@ export default class CommitteeController {
     @Body() update: Message,
     @Param('id') id: number,
     @CurrentUser() user: Member
-    ) {
+  ) {
     const message = await Message.findOne(id)
 
     if (!message) throw new NotFoundError('Cannot find ticket')
-    if (message.member.id !== user.id) throw new ForbiddenError('You can only edit your own content!')
+    if (message.member.id !== user.id)
+      throw new ForbiddenError('You can only edit your own content!')
 
-    Object.keys(message).forEach( (key)=>{
+    Object.keys(message).forEach(key => {
       if (update[key]) {
         message[key] = update[key]
       }
@@ -74,11 +71,7 @@ export default class CommitteeController {
 
   // @Authorized()
   @Delete('/committees/:id([0-9]+)')
-  deleteMessage(
-    @Param("id") id: number
-  ) {
-     return Message.delete(id);
+  deleteMessage(@Param('id') id: number) {
+    return Message.delete(id)
   }
-
-
 }
