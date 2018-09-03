@@ -89,7 +89,7 @@ export class Member extends BaseEntity {
   @ManyToOne(() => Team, team => team.members, { eager: true })
   team: Team
 
-  @ManyToMany(() => Committee, committee => committee.members, { eager: true })
+  @ManyToMany(() => Committee, committee => committee.members)
   @JoinTable()
   committees: Committee[]
 
