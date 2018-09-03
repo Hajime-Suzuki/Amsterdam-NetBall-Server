@@ -3,12 +3,15 @@ import {
   Post,
   Param,
   Get,
+  Put,
+  Delete,
   Body,
   Authorized,
   CurrentUser,
   QueryParams,
   BadRequestError,
-  NotFoundError
+  NotFoundError,
+  ForbiddenError
 } from 'routing-controllers'
 import { Committee } from '../entities/Committee'
 import { Member } from '../entities/Member'
@@ -28,18 +31,20 @@ export default class CommitteeController {
     @Param('id') id: number,
     @CurrentUser() user: Member
     ) {
-    const committee = await Committee.findOne(id)
+    let committee = await Committee.createQueryBuilder("c")
+       .leftJoinAndSelect("c.messages", "m")
+       .leftJoinAndSelect("m.member", "member")
+       .getOne()
     return committee
   }
 
   // @Authorized()
   @Post('/committees/:id([0-9]+)')
-  async addMessage(
+  async createMessage(
     @Body() message: Message,
     @Param('id') id: number,
     @CurrentUser() user: Member
     ) {
-    console.log('message', message)
     const thisCommittee = await Committee.findOne( id )
     if (!thisCommittee) throw new NotFoundError(`Committee does not exist`)
     message.committee = thisCommittee
@@ -47,23 +52,33 @@ export default class CommitteeController {
     return Message.create(message).save()
   }
 
+  // @Authorized()
+  @Put('/committees/:id([0-9]+)')
+  async updateMessage(
+    @Body() update: Message,
+    @Param('id') id: number,
+    @CurrentUser() user: Member
+    ) {
+    const message = await Message.findOne(id)
 
+    if (!message) throw new NotFoundError('Cannot find ticket')
+    if (message.member.id !== user.id) throw new ForbiddenError('You can only edit your own content!')
+
+    Object.keys(message).forEach( (key)=>{
+      if (update[key]) {
+        message[key] = update[key]
+      }
+    })
+    return message.save()
+  }
 
   // @Authorized()
-  // @Post('/tickets/:id')
-  // @HttpCode(201)
-  // async createTicket(
-  //   @Body() ticket: Ticket,
-  //   @Param('id') eventId,
-  //   @CurrentUser() user: User
-  // ) {
-  //   const thisEvent = await Event.findOne( eventId )
-  //   if (!thisEvent) throw new NotFoundError(`Event does not exist`)
+  @Delete('/committees/:id([0-9]+)')
+  deleteMessage(
+    @Param("id") id: number
+  ) {
+     return Message.delete(id);
+  }
 
-  //   ticket.event = thisEvent
-  //   ticket.user = user
-  //   ticket.price = parseFloat(ticket.price.toString())
-  //   return ticket.save()
-  // }
 
 }
