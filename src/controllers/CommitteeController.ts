@@ -31,10 +31,13 @@ export default class CommitteeController {
     @Param('id') id: number,
     @CurrentUser() user: Member
     ) {
-    let committee = await Committee.createQueryBuilder("c")
-       .leftJoinAndSelect("c.messages", "m")
-       .leftJoinAndSelect("m.member", "member")
-       .getOne()
+    // let committee = await Committee.createQueryBuilder("c")
+    //    .leftJoinAndSelect("c.messages", "m")
+    //    .leftJoinAndSelect("m.member", "member")
+    //    .getOne()
+
+    const committee = await Committee.findOne(id)
+    console.log('committee', committee)
     return committee
   }
 
