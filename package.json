@@ -8,11 +8,11 @@
     "@types/bcrypt": "^2.0.0",
     "@types/koa": "^2.0.46",
     "@types/koa-bodyparser": "^5.0.1",
-    "@types/koa-router": "^7.0.31",
-    "dotenv": "^6.0.0",
-    "faker": "^4.1.0"
+    "@types/koa-router": "^7.0.31"
   },
   "dependencies": {
+    "dotenv": "^6.0.0",
+    "faker": "^4.1.0",
     "bcrypt": "^3.0.0",
     "jsonwebtoken": "^8.3.0",
     "kcors": "^2.2.2",
@@ -31,9 +31,15 @@
     "typescript": "^3.0.3"
   },
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "postinstall": "tsc",
+    "dev": "nodemon --exec ts-node src/index.ts",
     "watch": "nodemon --exec ts-node src/index.ts",
+    "migration": "typeorm migration:run",
     "compile": "node_modules/.bin/tsc -p .",
-    "migrate": "ts-node ./node_modules/.bin/typeorm.cmd migrations:create -n test"
+    "generateMigration": "typeorm migration:generate -n MAIN"
+  },
+  "engines": {
+    "node": "8.9.1"
   }
 }

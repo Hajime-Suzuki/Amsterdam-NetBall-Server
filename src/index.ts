@@ -40,16 +40,17 @@ export const app = createKoaServer({
   }
 })
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 4000
+console.log(PORT)
 
-app.listen(PORT, () => {
-  console.log('Server is on ' + PORT)
-})
-// connectDatabase()
-//   .then(_ => {
-//     app.listen(PORT, () => {
-//       console.log('Server is on ' + PORT)
-//     })
-//     setInterval(updateAttendanceRate, 1000 * 3600 * 24)
-//   })
-//   .catch(err => console.error(err))
+// app.listen(PORT, () => {
+//   console.log('Server is on ' + PORT)
+// })
+connectDatabase()
+  .then(_ => {
+    app.listen(PORT, () => {
+      console.log('Server is on ' + PORT)
+    })
+    setInterval(updateAttendanceRate, 1000 * 3600 * 24)
+  })
+  .catch(err => console.error(err))

@@ -2,6 +2,15 @@ import { createConnection, getConnectionOptions } from 'typeorm'
 import { DefaultNamingStrategy } from 'typeorm/naming-strategy/DefaultNamingStrategy'
 import { NamingStrategyInterface } from 'typeorm/naming-strategy/NamingStrategyInterface'
 import { snakeCase } from 'typeorm/util/StringUtils'
+import { Activity } from './entities/Activity'
+import { ActivityAttendance } from './entities/ActivityAttendance'
+import { Committee } from './entities/Committee'
+import { League } from './entities/League'
+import { Member } from './entities/Member'
+import { Message } from './entities/Message'
+import { Position } from './entities/Position'
+import { Role } from './entities/Role'
+import { Team } from './entities/Team'
 
 class CustomNamingStrategy extends DefaultNamingStrategy
   implements NamingStrategyInterface {
@@ -30,7 +39,21 @@ class CustomNamingStrategy extends DefaultNamingStrategy
 
 export const connectDatabase = async () => {
   const dbSettings = await getConnectionOptions()
-  const settings = { ...dbSettings, namingStrategy: new CustomNamingStrategy() }
+  const settings = {
+    ...dbSettings,
+    entities: [
+      Activity,
+      ActivityAttendance,
+      Committee,
+      League,
+      Member,
+      Message,
+      Position,
+      Role,
+      Team
+    ]
+    // namingStrategy: new CustomNamingStrategy()
+  }
 
   const connection = await createConnection(settings)
   console.log('Connected to Postgres with TypeORM')
@@ -39,3 +62,7 @@ export const connectDatabase = async () => {
   console.log('Migration Done')
   return connection
 }
+
+// module.exports = {
+//   namingStrategy: CustomNamingStrategy
+// }
