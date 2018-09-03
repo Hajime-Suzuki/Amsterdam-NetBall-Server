@@ -1,14 +1,15 @@
-import { connectDatabase } from './databaseConnection'
-import { createKoaServer, Action, BadRequestError } from 'routing-controllers'
-import PopulateController from './controllers/Populate'
-import ActivityController from './controllers/adminControllers/ActivityController'
-import { verify } from './jwt'
-import { Member } from './entities/Member'
-import MemberController from './controllers/MemberController'
-import LoginController from './controllers/LoginController'
-import MetaDataController from './controllers/MetaDataCotroller'
-import CommitteeController from './controllers/CommitteeController'
-import { updateAttendanceRate } from './controllers/libs/updateAttendanceRate'
+import { connectDatabase } from "./databaseConnection"
+import { createKoaServer, Action, BadRequestError } from "routing-controllers"
+import PopulateController from "./controllers/Populate"
+import ActivityController from "./controllers/adminControllers/ActivityController"
+import { verify } from "./jwt"
+import { Member } from "./entities/Member"
+import MemberController from "./controllers/MemberController"
+import LoginController from "./controllers/LoginController"
+import MetaDataController from "./controllers/MetaDataCotroller"
+import CommitteeController from "./controllers/CommitteeController"
+import { updateAttendanceRate } from "./controllers/libs/updateAttendanceRate"
+import MemberActivityController from "./controllers/MemberActivityController"
 
 export const app = createKoaServer({
   cors: true,
@@ -18,7 +19,8 @@ export const app = createKoaServer({
     MemberController,
     LoginController,
     MetaDataController,
-    CommitteeController
+    CommitteeController,
+    MemberActivityController
   ],
   authorizationChecker: (action: Action) => {
     const token: string = action.request.headers.authorization
@@ -43,7 +45,7 @@ export const app = createKoaServer({
 connectDatabase()
   .then(_ => {
     app.listen(4000, () => {
-      console.log('Server is on 4000')
+      console.log("Server is on 4000")
     })
     setInterval(updateAttendanceRate, 1000 * 3600 * 24)
   })
