@@ -120,6 +120,10 @@ export default class MemberController {
       query.orderBy('member.firstName')
     }
 
+    if (params.orderType === 'name') {
+      query.orderBy('member.firstName', setDescAsc(params))
+    }
+
     if (params.orderType === 'points') {
       query.orderBy('member.activityPoints', setDescAsc(params), 'NULLS LAST')
     }
