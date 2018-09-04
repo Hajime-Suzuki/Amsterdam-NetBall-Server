@@ -7,34 +7,37 @@ import {
   ManyToMany,
   JoinTable,
   BeforeInsert
-} from "typeorm"
-import { Team } from "./Team"
-import { Member } from "./Member"
-import { ActivityAttendance } from "./ActivityAttendance"
-import * as moment from "moment"
+} from 'typeorm'
+import { Team } from './Team'
+import { Member } from './Member'
+import { ActivityAttendance } from './ActivityAttendance'
+import * as moment from 'moment'
 
 @Entity()
 export class Activity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column("varchar", { length: 255 })
+  @Column('varchar', { length: 255 })
   name: string
 
-  @Column("varchar", { length: 255 })
+  @Column('varchar', { length: 255 })
   location: string
 
-  @Column("varchar", { nullable: true })
+  @Column('varchar', { nullable: true })
   address?: string
 
-  @Column("timestamp")
+  @Column('timestamp')
   startTime: Date
 
-  @Column("timestamp")
+  @Column('timestamp')
   endTime: Date
 
-  @Column("integer")
+  @Column('integer')
   points?: number
+
+  @Column('text', { nullable: true })
+  description: string
 
   @ManyToMany(() => Member, member => member.activities)
   members: Member[]
@@ -46,6 +49,6 @@ export class Activity extends BaseEntity {
 
   @BeforeInsert()
   async setPoints() {
-    this.points = moment(this.endTime).diff(moment(this.startTime), "hours")
+    this.points = moment(this.endTime).diff(moment(this.startTime), 'hours')
   }
 }
