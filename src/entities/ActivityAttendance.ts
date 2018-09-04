@@ -29,6 +29,6 @@ export class ActivityAttendance extends BaseEntity {
   @ManyToOne(() => Activity, activity => activity.isAttended, { eager: true })
   activity: Activity
 
-  @Column({ nullable: true })
-  activityId: number
+  // @Column({ nullable: true })
+  // activityId: number
 }
