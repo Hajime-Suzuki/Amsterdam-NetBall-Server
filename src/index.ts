@@ -1,19 +1,21 @@
-import { connectDatabase } from "./databaseConnection"
-import { createKoaServer, Action, BadRequestError } from "routing-controllers"
-import PopulateController from "./controllers/Populate"
-import ActivityController from "./controllers/adminControllers/ActivityController"
-import { verify } from "./jwt"
-import { Member } from "./entities/Member"
-import MemberController from "./controllers/MemberController"
-import LoginController from "./controllers/LoginController"
-import MetaDataController from "./controllers/MetaDataCotroller"
-import CommitteeController from "./controllers/CommitteeController"
-import MemberActivityController from "./controllers/MemberActivityController"
+import { connectDatabase } from './databaseConnection'
+import { createKoaServer, Action, BadRequestError } from 'routing-controllers'
+import PopulateController from './controllers/Populate'
+import ActivityController from './controllers/adminControllers/ActivityController'
+import { verify } from './jwt'
+import { Member } from './entities/Member'
+import MemberController from './controllers/MemberController'
+import LoginController from './controllers/LoginController'
+import MetaDataController from './controllers/MetaDataCotroller'
+import CommitteeController from './controllers/CommitteeController'
+import MemberActivityController from './controllers/MemberActivityController'
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 import {
   updateAttendanceRate,
   updateCurrentMember
-} from "./libs/updateAttendanceRate"
+} from './libs/updateAttendanceRate'
 
 export const app = createKoaServer({
   cors: true,
@@ -54,10 +56,8 @@ console.log(PORT)
 // })
 connectDatabase()
   .then(_ => {
-
     app.listen(PORT, () => {
       console.log('Server is on ' + PORT)
-
     })
     setInterval(() => {
       updateAttendanceRate()

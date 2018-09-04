@@ -51,11 +51,12 @@ export const connectDatabase = async () => {
       Position,
       Role,
       Team
-    ]
-    // namingStrategy: new CustomNamingStrategy()
+    ],
+    namingStrategy: new CustomNamingStrategy()
   }
 
   const connection = await createConnection(settings)
+
   console.log('Connected to Postgres with TypeORM')
   // await connection.undoLastMigration()
   // await connection.runMigrations()
