@@ -30,9 +30,6 @@ export default class ActivityController {
 
       data.endTime = new Date(data.endTime)
       data.startTime = new Date(data.startTime)
-      // data.points = 1
-      console.log(data)
-      // console.log(typeof data.startTime)
 
       return Activity.create(data).save()
     } catch (e) {
