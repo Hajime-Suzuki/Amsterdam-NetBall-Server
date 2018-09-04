@@ -18,7 +18,6 @@ import { Activity } from "../../entities/Activity"
 export default class ActivityController {
   @Get("/")
   getActivities() {
-    console.log("Activity runs")
     return Activity.find()
   }
 
@@ -26,8 +25,19 @@ export default class ActivityController {
   @Post("/")
   @HttpCode(201)
   createActivity(@CurrentUser() member: Member, @Body() data: Activity) {
-    member.checkIfAdmin()
-    return Activity.create(data).save()
+    try {
+      member.checkIfAdmin()
+
+      data.endTime = new Date(data.endTime)
+      data.startTime = new Date(data.startTime)
+      // data.points = 1
+      console.log(data)
+      // console.log(typeof data.startTime)
+
+      return Activity.create(data).save()
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   @Authorized()

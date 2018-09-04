@@ -5,11 +5,13 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToMany,
-  JoinTable
+  JoinTable,
+  BeforeInsert
 } from "typeorm"
 import { Team } from "./Team"
 import { Member } from "./Member"
 import { ActivityAttendance } from "./ActivityAttendance"
+import * as moment from "moment"
 
 @Entity()
 export class Activity extends BaseEntity {
@@ -32,7 +34,7 @@ export class Activity extends BaseEntity {
   endTime: Date
 
   @Column("integer")
-  points: number
+  points?: number
 
   @ManyToMany(() => Member, member => member.activities)
   members: Member[]
@@ -41,4 +43,9 @@ export class Activity extends BaseEntity {
     cascade: true
   })
   isAttended: ActivityAttendance[]
+
+  @BeforeInsert()
+  async setPoints() {
+    this.points = moment(this.endTime).diff(moment(this.startTime), "hours")
+  }
 }
