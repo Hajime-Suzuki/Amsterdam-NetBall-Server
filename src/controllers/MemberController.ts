@@ -10,28 +10,25 @@ import {
   QueryParams,
   Patch,
   BadRequestError
-
-} from "routing-controllers"
-import { getRepository, Brackets } from "typeorm"
-import { Member } from "../entities/Member"
-import { Position } from "../entities/Position"
-import { Role } from "../entities/Role"
-import * as moment from "moment"
-import { ifError } from "assert"
-import { setMemberOrder } from "../libs/setMemberOrder"
-
+} from 'routing-controllers'
+import { getRepository, Brackets } from 'typeorm'
+import { Member } from '../entities/Member'
+import { Position } from '../entities/Position'
+import { Role } from '../entities/Role'
+import * as moment from 'moment'
+import { ifError } from 'assert'
+import { setMemberOrder } from '../libs/setMemberOrder'
 
 @JsonController()
 export default class MemberController {
-
   @Get('/')
-  top(){
+  top() {
     return 'Amsterdam Netball'
   }
 
   @Post('/signup')
   async signup(@Body() data: Member) {
-    data.role = await Role.findOne({ where: { roleName: "member" }})
+    data.role = await Role.findOne({ where: { roleName: 'member' } })
     return Member.create(data).save()
   }
 
@@ -44,12 +41,10 @@ export default class MemberController {
   }
 
   @Authorized()
-
-  @Patch("/members/:memberId([0-9]+)/:activityId([0-9]+)")
+  @Patch('/members/:memberId([0-9]+)/:activityId([0-9]+)')
   async joinActivity(
-    @Param("memberId") memberId: number,
-    @Param("activityId") activityId: number,
-
+    @Param('memberId') memberId: number,
+    @Param('activityId') activityId: number,
     @CurrentUser() user: Member | null
   ) {
     const member = await Member.findOne(memberId)
@@ -60,10 +55,10 @@ export default class MemberController {
   }
 
   @Authorized()
-  @Patch("/members/unsubscribe/:memberId([0-9]+)/:activityId([0-9]+)")
+  @Patch('/members/unsubscribe/:memberId([0-9]+)/:activityId([0-9]+)')
   async unsubscribeActivity(
-    @Param("memberId") memberId: number,
-    @Param("activityId") activityId: number,
+    @Param('memberId') memberId: number,
+    @Param('activityId') activityId: number,
     @CurrentUser() user: Member | null
   ) {
     const member = await Member.findOne(memberId)
@@ -77,7 +72,7 @@ export default class MemberController {
     return member
   }
 
-  // @Authorized()
+  @Authorized()
   @Get('/members')
   async allUsers(
     @QueryParams() params: any,
@@ -166,14 +161,12 @@ export default class MemberController {
       query = query.andWhere('member.role.id = :role', { role: params.role })
     }
 
-
     if (user.role.roleName === 'admin' && params.currentMemberOption) {
       const option = params.currentMemberOption
 
       if (params.currentMemberOption !== 'All') {
         query = query.andWhere('member.isCurrentMember = :membership', {
           membership: option === 'currentMemberOnly'
-
         })
       }
     } else {
