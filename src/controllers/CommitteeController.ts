@@ -19,26 +19,44 @@ import { Message } from '../entities/Message'
 
 @JsonController()
 export default class CommitteeController {
-  // @Post('/committees')
-  // addCommittee(@Body() data: Committee) {
-  //   return Committee.create(data).save()
-  // }
 
   // @Authorized()
-  @Get('/committees/:id([0-9]+)')
+  @Get('/allcommittees')
+  async getAllCommittees(
+    @CurrentUser() user: Member
+    ) {
+    console.log('received')
+    const committees = await Committee.find()
+    return committees
+  }
 
+  @Authorized()
+  @Post('/committees')
+  createCommittee(@Body() data: Committee) {
+    console.log('data', data)
+    return Committee.create(data).save()
+  }
+
+  // @Authorized()
+  @Delete('/committees/:committeeId([0-9]+)')
+  async deleteCommittee(
+    @Param("committeeId") committeeId: number
+  ) {
+     console.log('committeeId', committeeId)
+     const message = await Message.findOne(committeeId)
+     return Message.delete(committeeId);
+  }
+
+  @Authorized()
+  @Get('/committees/:id([0-9]+)')
   async getCommittee(
     @Param('id') id: number,
     @CurrentUser() user: Member
     ) {
-    // let committee = await Committee.createQueryBuilder("c")
-    //    .leftJoinAndSelect("c.messages", "m")
-    //    .leftJoinAndSelect("m.member", "member")
-    //    .getOne()
 
     const committee = await Committee.findOne(id)
-
     return committee
+
   }
 
   // @Authorized()
@@ -74,7 +92,6 @@ export default class CommitteeController {
 
     if (!thisMessage) throw new NotFoundError('Cannot find ticket')
 
-    console.log('update', update)
     Object.keys(thisMessage).forEach( (key)=>{
       if (update[key] && key!=='id') {
         thisMessage[key] = update[key]
