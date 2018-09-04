@@ -18,7 +18,7 @@ import { Position } from './Position'
 import { Role } from './Role'
 import { Team } from './Team'
 import { Committee } from './Committee'
-import { Message } from "./Message"
+import { Message } from './Message'
 import { IsEmail, IsString, IsDate, IsBoolean } from 'class-validator'
 import { Exclude } from 'class-transformer'
 import { Activity } from './Activity'
