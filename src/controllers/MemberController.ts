@@ -15,6 +15,7 @@ import {
 import { getRepository, Brackets } from "typeorm"
 import { Member } from "../entities/Member"
 import { Position } from "../entities/Position"
+import { Role } from "../entities/Role"
 import * as moment from "moment"
 import { ifError } from "assert"
 import { setMemberOrder } from "../libs/setMemberOrder"
@@ -29,8 +30,8 @@ export default class MemberController {
   }
 
   @Post('/signup')
-  signup(@Body() data: Member) {
-    console.log(data)
+  async signup(@Body() data: Member) {
+    data.role = await Role.findOne({ where: { roleName: "member" }})
     return Member.create(data).save()
   }
 
