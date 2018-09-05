@@ -5,7 +5,7 @@ import { JsonController, Get, Authorized } from "routing-controllers"
 export default class TeamController {
   @Authorized()
   @Get("/teams")
-  allActivities() {
+  allTeams() {
     return Team.find()
   }
 }
