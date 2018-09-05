@@ -31,4 +31,7 @@ export class ActivityAttendance extends BaseEntity {
 
   @Column({ nullable: true })
   activityId: number
+
+  @Column({ nullable: true })
+  memberId: number
 }
