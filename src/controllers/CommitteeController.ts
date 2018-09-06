@@ -21,12 +21,11 @@ import { Message } from '../entities/Message'
 @JsonController()
 export default class CommitteeController {
 
-  // @Authorized()
+  @Authorized()
   @Get('/allcommittees')
   async getAllCommittees(
     @CurrentUser() user: Member
     ) {
-    console.log('received')
     const committees = await Committee.find()
     return committees
   }
@@ -38,7 +37,7 @@ export default class CommitteeController {
     return Committee.create(data).save()
   }
 
-  // @Authorized()
+  @Authorized()
   @Delete('/committees/:committeeId([0-9]+)')
   async deleteCommittee(
     @Param("committeeId") committeeId: number

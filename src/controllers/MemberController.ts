@@ -15,13 +15,13 @@ import {
 } from 'routing-controllers'
 import { getRepository, Brackets } from 'typeorm'
 import { Member } from '../entities/Member'
+import { Team } from '../entities/Team'
 import { Position } from '../entities/Position'
 import { Role } from '../entities/Role'
 import { Committee } from '../entities/Committee'
 import * as moment from 'moment'
 import { ifError } from 'assert'
 import { setMemberOrder } from '../libs/setMemberOrder'
-import { Team } from '../entities/Team'
 
 @JsonController()
 export default class MemberController {
