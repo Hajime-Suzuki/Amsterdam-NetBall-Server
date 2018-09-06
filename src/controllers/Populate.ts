@@ -1,18 +1,6 @@
-import {
-  JsonController,
-  Post,
-  Param,
-  Get,
-  Body,
-  Authorized
-} from 'routing-controllers'
-import { Member } from '../entities/Member'
 import * as faker from 'faker'
-import { Team } from '../entities/Team'
-import { League } from '../entities/League'
-import { Position } from '../entities/Position'
-import { Role } from '../entities/Role'
-import { Activity } from '../entities/Activity'
+import { Get, JsonController } from 'routing-controllers'
+import { Member } from '../entities/Member'
 
 @JsonController('/populate')
 export default class PopulateController {

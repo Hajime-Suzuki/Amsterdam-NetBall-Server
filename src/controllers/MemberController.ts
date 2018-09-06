@@ -1,27 +1,24 @@
-import { Activity } from './../entities/Activity'
-import {
-  JsonController,
-  Post,
-  Param,
-  Get,
-  Patch,
-  Put,
-  Body,
-  Authorized,
-  CurrentUser,
-  QueryParams,
-  BadRequestError,
-  NotFoundError
-} from 'routing-controllers'
-import { getRepository, Brackets } from 'typeorm'
-import { Member } from '../entities/Member'
-import { Team } from '../entities/Team'
-import { Position } from '../entities/Position'
-import { Role } from '../entities/Role'
-import { Committee } from '../entities/Committee'
 import * as moment from 'moment'
-import { ifError } from 'assert'
+import {
+  Authorized,
+  Body,
+  CurrentUser,
+  Get,
+  JsonController,
+  NotFoundError,
+  Param,
+  Patch,
+  Post,
+  Put,
+  QueryParams
+} from 'routing-controllers'
+import { Brackets } from 'typeorm'
+import { Committee } from '../entities/Committee'
+import { Member } from '../entities/Member'
+import { Role } from '../entities/Role'
+import { Team } from '../entities/Team'
 import { setMemberOrder } from '../libs/setMemberOrder'
+import { Activity } from './../entities/Activity'
 
 @JsonController()
 export default class MemberController {

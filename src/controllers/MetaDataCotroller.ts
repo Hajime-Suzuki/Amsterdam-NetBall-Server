@@ -1,15 +1,6 @@
-import { IsString } from 'class-validator'
-import {
-  JsonController,
-  Post,
-  Body,
-  BadRequestError,
-  Get
-} from 'routing-controllers'
-import { sign } from '../jwt'
-import { Member } from '../entities/Member'
-import { Position } from '../entities/Position'
+import { Get, JsonController } from 'routing-controllers'
 import { Committee } from '../entities/Committee'
+import { Position } from '../entities/Position'
 import { Role } from '../entities/Role'
 import { Team } from '../entities/Team'
 

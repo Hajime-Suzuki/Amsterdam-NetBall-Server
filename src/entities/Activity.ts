@@ -1,17 +1,15 @@
+import * as moment from 'moment'
 import {
   BaseEntity,
+  BeforeInsert,
   Column,
   Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
   ManyToMany,
-  JoinTable,
-  BeforeInsert
+  OneToMany,
+  PrimaryGeneratedColumn
 } from 'typeorm'
-import { Team } from './Team'
-import { Member } from './Member'
 import { ActivityAttendance } from './ActivityAttendance'
-import * as moment from 'moment'
+import { Member } from './Member'
 
 @Entity()
 export class Activity extends BaseEntity {

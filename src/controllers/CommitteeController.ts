@@ -1,18 +1,14 @@
 import {
-  JsonController,
-  Post,
-  Param,
-  Get,
-  Put,
-  Patch,
-  Delete,
-  Body,
   Authorized,
+  Body,
   CurrentUser,
-  QueryParams,
-  BadRequestError,
+  Delete,
+  Get,
+  JsonController,
   NotFoundError,
-  ForbiddenError
+  Param,
+  Post,
+  Put
 } from 'routing-controllers'
 import { Committee } from '../entities/Committee'
 import { Member } from '../entities/Member'
@@ -20,12 +16,9 @@ import { Message } from '../entities/Message'
 
 @JsonController()
 export default class CommitteeController {
-
   @Authorized()
   @Get('/allcommittees')
-  async getAllCommittees(
-    @CurrentUser() user: Member
-    ) {
+  async getAllCommittees(@CurrentUser() user: Member) {
     const committees = await Committee.find()
     return committees
   }
@@ -39,29 +32,21 @@ export default class CommitteeController {
 
   @Authorized()
   @Delete('/committees/:committeeId([0-9]+)')
-  async deleteCommittee(
-    @Param("committeeId") committeeId: number
-  ) {
-     console.log('committeeId', committeeId)
-     const message = await Message.findOne(committeeId)
-     return Message.delete(committeeId);
+  async deleteCommittee(@Param('committeeId') committeeId: number) {
+    console.log('committeeId', committeeId)
+    const message = await Message.findOne(committeeId)
+    return Message.delete(committeeId)
   }
 
   @Authorized()
   @Get('/committees/:id([0-9]+)')
-  async getCommittee(
-    @Param('id') id: number,
-    @CurrentUser() user: Member
-    ) {
-
+  async getCommittee(@Param('id') id: number, @CurrentUser() user: Member) {
     const committee = await Committee.findOne(id)
     return committee
-
   }
 
-
-    /* * * * * * */
-   /* Messages  */
+  /* * * * * * */
+  /* Messages  */
   /* * * * * * */
 
   // @Authorized()
@@ -70,11 +55,10 @@ export default class CommitteeController {
     @Body() message: Message,
     @Param('id') id: number,
     @CurrentUser() user: Member
-
-    ) {
+  ) {
     console.log('message', message)
 
-    const thisCommittee = await Committee.findOne( id )
+    const thisCommittee = await Committee.findOne(id)
 
     if (!thisCommittee) throw new NotFoundError(`Committee does not exist`)
     message.committee = thisCommittee
@@ -90,17 +74,15 @@ export default class CommitteeController {
     @Param('id') id: number,
     @Param('messageId') messageId: number,
     @CurrentUser() user: Member
-
-    ) {
+  ) {
     console.log('update', update)
     const thisMessage = await Message.findOne(messageId)
 
     if (!thisMessage) throw new NotFoundError('Cannot find ticket')
 
-    Object.keys(thisMessage).forEach( (key)=>{
-      if (update[key] && key!=='id') {
+    Object.keys(thisMessage).forEach(key => {
+      if (update[key] && key !== 'id') {
         thisMessage[key] = update[key]
-
       }
     })
     return thisMessage.save()
@@ -110,11 +92,10 @@ export default class CommitteeController {
 
   @Delete('/committees/:id([0-9]+)/:messageId([0-9]+)')
   async deleteMessage(
-    @Param("id") id: number,
-    @Param("messageId") messageId: number
+    @Param('id') id: number,
+    @Param('messageId') messageId: number
   ) {
-     const message = await Message.findOne(messageId)
-     return Message.delete(messageId);
+    const message = await Message.findOne(messageId)
+    return Message.delete(messageId)
   }
-
 }

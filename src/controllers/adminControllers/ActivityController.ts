@@ -1,20 +1,19 @@
 import {
-  JsonController,
-  Post,
-  Param,
-  Get,
-  Body,
   Authorized,
-  Patch,
-  NotFoundError,
-  Delete,
+  Body,
   CurrentUser,
+  Delete,
+  Get,
   HttpCode,
-  BodyParam
+  JsonController,
+  NotFoundError,
+  Param,
+  Patch,
+  Post
 } from 'routing-controllers'
-import { Member } from '../../entities/Member'
 import { Activity } from '../../entities/Activity'
 import { ActivityAttendance } from '../../entities/ActivityAttendance'
+import { Member } from '../../entities/Member'
 
 @JsonController('/admin/activity')
 export default class ActivityController {

@@ -1,13 +1,12 @@
 import { IsString } from 'class-validator'
 import {
-  JsonController,
-  Post,
+  BadRequestError,
   Body,
-  BadRequestError
+  JsonController,
+  Post
 } from 'routing-controllers'
-import { sign } from '../jwt'
 import { Member } from '../entities/Member'
-import { getConnectionOptions } from '../../node_modules/typeorm'
+import { sign } from '../jwt'
 
 class AuthenticatePayload {
   @IsString()
