@@ -12,21 +12,30 @@ import {
   AfterLoad,
   OneToOne,
   JoinColumn
-} from "typeorm"
-import * as bcrypt from "bcrypt"
-import { Position } from "./Position"
-import { Role } from "./Role"
-import { Team } from "./Team"
-import { Committee } from "./Committee"
-import { Message } from "./Message"
-import { IsEmail, IsString, IsDate, IsBoolean } from "class-validator"
-import { Exclude } from "class-transformer"
-import { Activity } from "./Activity"
-import { UnauthorizedError } from "routing-controllers"
-import { ActivityAttendance } from "./ActivityAttendance"
+} from 'typeorm'
+import * as bcrypt from 'bcrypt'
+import { Position } from './Position'
+import { Role } from './Role'
+import { Team } from './Team'
+import { Committee } from './Committee'
+import { Message } from './Message'
+import {
+  IsEmail,
+  IsString,
+  IsDate,
+  IsBoolean,
+  Length,
+  MinLength,
+  MaxLength
+} from 'class-validator'
+import { Exclude } from 'class-transformer'
+import { Activity } from './Activity'
+import { UnauthorizedError } from 'routing-controllers'
+import { ActivityAttendance } from './ActivityAttendance'
+
 
 @Entity()
-// @Unique(['email'])
+@Unique(['email'])
 export class Member extends BaseEntity {
   @PrimaryGeneratedColumn()
   id?: number
@@ -43,8 +52,10 @@ export class Member extends BaseEntity {
   @Column("varchar", { length: 255, nullable: true })
   streetAddress: string
 
-  @IsString()
-  @Column("char", { length: 6, nullable: true })
+
+  // @IsString()
+  @Length(6, 6, { message: 'Invalid Postal Code' })
+  @Column('char', { length: 6, nullable: true })
   postalCode: string
 
   @IsString()
