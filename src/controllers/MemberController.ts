@@ -1,4 +1,4 @@
-import { Activity } from "./../entities/Activity"
+import { Activity } from './../entities/Activity'
 import {
   JsonController,
   Post,
@@ -11,8 +11,8 @@ import {
   CurrentUser,
   QueryParams,
   BadRequestError,
-  NotFoundError,
-} from "routing-controllers"
+  NotFoundError
+} from 'routing-controllers'
 import { getRepository, Brackets } from 'typeorm'
 import { Member } from '../entities/Member'
 import { Position } from '../entities/Position'
@@ -21,48 +21,48 @@ import { Committee } from '../entities/Committee'
 import * as moment from 'moment'
 import { ifError } from 'assert'
 import { setMemberOrder } from '../libs/setMemberOrder'
+import { Team } from '../entities/Team'
 
 @JsonController()
 export default class MemberController {
-  @Get("/")
+  @Get('/')
   top() {
-    return "Amsterdam Netball"
+    return 'Amsterdam Netball'
   }
 
-  @Post("/signup")
+  @Post('/signup')
   async signup(@Body() data: Member) {
-    data.role = await Role.findOne({ where: { roleName: "member" } })
+    data.role = await Role.findOne({ where: { roleName: 'member' } })
     return Member.create(data).save()
   }
 
   @Authorized()
   @Get('/members/:id([0-9]+)')
   async getUser(@Param('id') id: number, @CurrentUser() user: Member) {
-    const member = await Member.createQueryBuilder("m")
-      .where("m.id = :id", { id })
-      .leftJoinAndSelect("m.committees", "c")
-      .leftJoinAndSelect("m.role", "r")
-      .leftJoinAndSelect("m.team", "t")
-      .leftJoinAndSelect("m.activities", "a")
-      .leftJoinAndSelect("m.positions", "p")
+    const member = await Member.createQueryBuilder('m')
+      .where('m.id = :id', { id })
+      .leftJoinAndSelect('m.committees', 'c')
+      .leftJoinAndSelect('m.role', 'r')
+      .leftJoinAndSelect('m.team', 't')
+      .leftJoinAndSelect('m.activities', 'a')
+      .leftJoinAndSelect('m.positions', 'p')
       .getOne()
-
     return member
   }
 
   @Authorized()
-  @Put("/members/:id([0-9]+)")
+  @Put('/members/:id([0-9]+)')
   async updateProfile(
-    @Param("id") id: number,
+    @Param('id') id: number,
     @Body() update,
     @CurrentUser() user: Member
   ) {
     const member = await Member.findOne(id)
-    if (!member) throw new NotFoundError("Cannot find member")
+    if (!member) throw new NotFoundError('Cannot find member')
 
     if (update.team) {
       const oldTeam = await Team.findOne(member.team.id, {
-        relations: ["members"]
+        relations: ['members']
       })
 
       if (oldTeam.members.length > 0) {
@@ -73,7 +73,7 @@ export default class MemberController {
         await oldTeam.save()
       }
 
-      const team = await Team.findOne(update.team, { relations: ["members"] })
+      const team = await Team.findOne(update.team, { relations: ['members'] })
       member.team = team
       team.members.push(member)
       await Promise.all([member.save(), team.save()])
@@ -86,10 +86,10 @@ export default class MemberController {
   }
 
   @Authorized()
-  @Patch("/members/:memberId([0-9]+)/:activityId([0-9]+)")
+  @Patch('/members/:memberId([0-9]+)/:activityId([0-9]+)')
   async joinActivity(
-    @Param("memberId") memberId: number,
-    @Param("activityId") activityId: number,
+    @Param('memberId') memberId: number,
+    @Param('activityId') activityId: number,
     @CurrentUser() user: Member | null
   ) {
     const member = await Member.findOne(memberId)
@@ -100,10 +100,10 @@ export default class MemberController {
   }
 
   @Authorized()
-  @Patch("/members/unsubscribe/:memberId([0-9]+)/:activityId([0-9]+)")
+  @Patch('/members/unsubscribe/:memberId([0-9]+)/:activityId([0-9]+)')
   async unsubscribeActivity(
-    @Param("memberId") memberId: number,
-    @Param("activityId") activityId: number,
+    @Param('memberId') memberId: number,
+    @Param('activityId') activityId: number,
     @CurrentUser() user: Member | null
   ) {
     const member = await Member.findOne(memberId)
@@ -117,25 +117,24 @@ export default class MemberController {
     return member
   }
 
-
   @Authorized()
   @Patch('/committees/join/:memberId([0-9]+)/:committeeId([0-9]+)')
   async addCommitteeToMember(
     @Param('memberId') memberId: number,
     @Param('committeeId') committeeId: number,
     @CurrentUser() user: Member
-    ) {
+  ) {
     console.log('add memberId', memberId, 'committeeId', committeeId)
-    const thisMember = await Member.createQueryBuilder("m")
-      .where("m.id = :id", { id: memberId })
-      .leftJoinAndSelect("m.committees", "c")
-      .leftJoinAndSelect("m.role", "r")
-      .leftJoinAndSelect("m.team", "t")
-      .leftJoinAndSelect("m.activities", "a")
-      .leftJoinAndSelect("m.positions", "p")
+    const thisMember = await Member.createQueryBuilder('m')
+      .where('m.id = :id', { id: memberId })
+      .leftJoinAndSelect('m.committees', 'c')
+      .leftJoinAndSelect('m.role', 'r')
+      .leftJoinAndSelect('m.team', 't')
+      .leftJoinAndSelect('m.activities', 'a')
+      .leftJoinAndSelect('m.positions', 'p')
       .getOne()
 
-    const thisCommittee = await Committee.findOne( committeeId )
+    const thisCommittee = await Committee.findOne(committeeId)
     thisMember.committees.push(thisCommittee)
     await thisCommittee.save()
     await thisMember.save()
@@ -148,20 +147,22 @@ export default class MemberController {
     @Param('memberId') memberId: number,
     @Param('committeeId') committeeId: number,
     @CurrentUser() user: Member
-    ) {
+  ) {
     console.log('remove memberId', memberId, 'committeeId', committeeId)
-    const thisMember = await Member.createQueryBuilder("m")
-      .where("m.id = :id", { id: memberId })
-      .leftJoinAndSelect("m.committees", "c")
-      .leftJoinAndSelect("m.role", "r")
-      .leftJoinAndSelect("m.team", "t")
-      .leftJoinAndSelect("m.activities", "a")
-      .leftJoinAndSelect("m.positions", "p")
+    const thisMember = await Member.createQueryBuilder('m')
+      .where('m.id = :id', { id: memberId })
+      .leftJoinAndSelect('m.committees', 'c')
+      .leftJoinAndSelect('m.role', 'r')
+      .leftJoinAndSelect('m.team', 't')
+      .leftJoinAndSelect('m.activities', 'a')
+      .leftJoinAndSelect('m.positions', 'p')
       .getOne()
 
-    const thisCommittee = await Committee.findOne( committeeId )
+    const thisCommittee = await Committee.findOne(committeeId)
     thisMember.committees.splice(
-      thisMember.committees.findIndex(committee => committeeId === committee.id),
+      thisMember.committees.findIndex(
+        committee => committeeId === committee.id
+      ),
       1
     )
     await thisCommittee.save()
@@ -169,48 +170,47 @@ export default class MemberController {
     return thisMember
   }
 
-
   @Authorized()
-  @Get("/members")
+  @Get('/members')
   async allUsers(
     @QueryParams() params: any,
     @CurrentUser() user: Member | null
   ) {
-    const name = params.name ? params.name : "%"
-    let query = Member.createQueryBuilder("member")
+    const name = params.name ? params.name : '%'
+    let query = Member.createQueryBuilder('member')
 
-    if (user.role.roleName !== "admin") {
+    if (user.role.roleName !== 'admin') {
       query.select([
-        "member.id",
-        "member.firstName",
-        "member.lastName",
-        "member.isCurrentMember",
-        "positions",
-        "committees",
-        "activity"
+        'member.id',
+        'member.firstName',
+        'member.lastName',
+        'member.isCurrentMember',
+        'positions',
+        'committees',
+        'activity'
       ])
     }
 
     query
-      .leftJoinAndSelect("member.positions", "positions")
-      .leftJoinAndSelect("member.committees", "committees")
-      .leftJoinAndSelect("member.team", "team")
-      .leftJoinAndSelect("member.activities", "activity")
+      .leftJoinAndSelect('member.positions', 'positions')
+      .leftJoinAndSelect('member.committees', 'committees')
+      .leftJoinAndSelect('member.team', 'team')
+      .leftJoinAndSelect('member.activities', 'activity')
       .where(
         new Brackets(qb => {
-          qb.where("member.firstName ILIKE :name", {
+          qb.where('member.firstName ILIKE :name', {
             name: `%${name}%`
-          }).orWhere("member.lastName ILIKE :name", { name: `%${name}%` })
+          }).orWhere('member.lastName ILIKE :name', { name: `%${name}%` })
         })
       )
 
     if (params.email) {
-      query = query.andWhere("member.email ILIKE :email", {
+      query = query.andWhere('member.email ILIKE :email', {
         email: `%${params.email}%`
       })
     }
     if (params.city) {
-      query = query.andWhere("member.city ILIKE :city", {
+      query = query.andWhere('member.city ILIKE :city', {
         city: `%${params.city}%`
       })
     }
@@ -222,53 +222,53 @@ export default class MemberController {
 
     if (params.dateOfBirth) {
       const timestamp = new Date(params.dateOfBirth)
-      query = query.andWhere("member.dateOfBirth = :dateOfBirth", {
+      query = query.andWhere('member.dateOfBirth = :dateOfBirth', {
         dateOfBirth: timestamp
       })
     }
     if (params.startDate) {
       const timestamp = new Date(params.startDate)
-      query = query.andWhere("member.startDate = :startDate", {
+      query = query.andWhere('member.startDate = :startDate', {
         startDate: timestamp
       })
     }
     if (params.endDate) {
       const timestamp = new Date(params.endDate)
-      query = query.andWhere("member.endDate = :endDate", {
+      query = query.andWhere('member.endDate = :endDate', {
         endDate: timestamp
       })
     }
     if (params.positions) {
       // const allPositions = params.positions.split(',')
-      query = query.andWhere("positions.id IN (:...names)", {
-        names: params.positions.split(",")
+      query = query.andWhere('positions.id IN (:...names)', {
+        names: params.positions.split(',')
       })
     }
     if (params.committees) {
-      const allCommittees = params.committees.split(",")
-      query = query.andWhere("committees.id IN (:...ids)", {
+      const allCommittees = params.committees.split(',')
+      query = query.andWhere('committees.id IN (:...ids)', {
         ids: allCommittees
       })
     }
     if (params.teams) {
-      query = query.andWhere("team.id IN (:...teams)", {
-        teams: params.teams.split(",")
+      query = query.andWhere('team.id IN (:...teams)', {
+        teams: params.teams.split(',')
       })
     }
     if (params.role) {
-      query = query.andWhere("member.role.id = :role", { role: params.role })
+      query = query.andWhere('member.role.id = :role', { role: params.role })
     }
 
-    if (user.role.roleName === "admin" && params.currentMemberOption) {
+    if (user.role.roleName === 'admin' && params.currentMemberOption) {
       const option = params.currentMemberOption
 
-      if (params.currentMemberOption !== "All") {
-        query = query.andWhere("member.isCurrentMember = :membership", {
-          membership: option === "currentMemberOnly"
+      if (params.currentMemberOption !== 'All') {
+        query = query.andWhere('member.isCurrentMember = :membership', {
+          membership: option === 'currentMemberOnly'
         })
       }
     } else {
-      query = query.andWhere("member.isCurrentMember = :membership", {
+      query = query.andWhere('member.isCurrentMember = :membership', {
         membership: true
       })
     }
@@ -280,7 +280,7 @@ export default class MemberController {
     return { members: result, count }
   }
 
-  @Get("/test")
+  @Get('/test')
   async test() {
     const members = await Member.find()
     const now = new Date()
@@ -303,7 +303,7 @@ export default class MemberController {
       u.activityPoints = totalAttended.reduce((points, act) => {
         const diff = moment(act.activity.endTime).diff(
           moment(act.activity.startTime),
-          "hours"
+          'hours'
         )
         return (points += diff)
       }, 0)
@@ -311,6 +311,6 @@ export default class MemberController {
 
     await Member.save(members)
 
-    return "updated"
+    return 'updated'
   }
 }
