@@ -5,7 +5,8 @@ import { JsonController, Get, Authorized } from "routing-controllers"
 export default class TeamController {
   @Authorized()
   @Get("/teams")
-  allTeams() {
-    return Team.find()
+  async allTeams() {
+    const teams = await Team.find({ relations: ["members"] })
+    return teams
   }
 }
