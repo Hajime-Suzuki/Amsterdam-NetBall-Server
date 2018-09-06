@@ -5,6 +5,7 @@ import {
   Column,
   ManyToMany,
   OneToMany,
+  JoinTable,
 } from "typeorm"
 import { IsString } from "class-validator"
 import { Message } from './Message'
@@ -26,7 +27,8 @@ export class Committee extends BaseEntity {
   @OneToMany(() => Message, message => message.committee, { eager: true })
   messages: Message[]
 
-  @ManyToMany(() => Member, member => member.positions)
+  @ManyToMany(() => Member, member => member.committees)
+  @JoinTable()
   members: Member[]
 
 }

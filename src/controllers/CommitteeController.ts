@@ -4,6 +4,7 @@ import {
   Param,
   Get,
   Put,
+  Patch,
   Delete,
   Body,
   Authorized,
@@ -58,6 +59,11 @@ export default class CommitteeController {
     return committee
 
   }
+
+
+    /* * * * * * */
+   /* Messages  */
+  /* * * * * * */
 
   // @Authorized()
   @Post('/committees/:id([0-9]+)')

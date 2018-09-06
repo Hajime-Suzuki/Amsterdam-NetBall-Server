@@ -84,9 +84,11 @@ export class Member extends BaseEntity {
   activityPoints: number
 
   @ManyToOne(() => Role, role => role.members, { eager: true })
+  @JoinTable()
   role: Role
 
   @ManyToOne(() => Team, team => team.members, { eager: true })
+  @JoinTable()
   team: Team
 
   @ManyToMany(() => Committee, committee => committee.members)

@@ -4,23 +4,23 @@ import {
   Post,
   Param,
   Get,
+  Patch,
+  Put,
   Body,
   Authorized,
   CurrentUser,
   QueryParams,
-  Patch,
   BadRequestError,
   NotFoundError,
-  Put
 } from "routing-controllers"
-import { getRepository, Brackets } from "typeorm"
-import { Member } from "../entities/Member"
-import { Position } from "../entities/Position"
-import { Role } from "../entities/Role"
-import * as moment from "moment"
-import { ifError } from "assert"
-import { setMemberOrder } from "../libs/setMemberOrder"
-import { Team } from "../entities/Team"
+import { getRepository, Brackets } from 'typeorm'
+import { Member } from '../entities/Member'
+import { Position } from '../entities/Position'
+import { Role } from '../entities/Role'
+import { Committee } from '../entities/Committee'
+import * as moment from 'moment'
+import { ifError } from 'assert'
+import { setMemberOrder } from '../libs/setMemberOrder'
 
 @JsonController()
 export default class MemberController {
@@ -36,9 +36,16 @@ export default class MemberController {
   }
 
   @Authorized()
-  @Get("/members/:id([0-9]+)")
-  getUser(@Param("id") id: number, @CurrentUser() user: Member) {
-    const member = Member.findOne(id)
+  @Get('/members/:id([0-9]+)')
+  async getUser(@Param('id') id: number, @CurrentUser() user: Member) {
+    const member = await Member.createQueryBuilder("m")
+      .where("m.id = :id", { id })
+      .leftJoinAndSelect("m.committees", "c")
+      .leftJoinAndSelect("m.role", "r")
+      .leftJoinAndSelect("m.team", "t")
+      .leftJoinAndSelect("m.activities", "a")
+      .leftJoinAndSelect("m.positions", "p")
+      .getOne()
 
     return member
   }
@@ -109,6 +116,59 @@ export default class MemberController {
     await member.save()
     return member
   }
+
+
+  @Authorized()
+  @Patch('/committees/join/:memberId([0-9]+)/:committeeId([0-9]+)')
+  async addCommitteeToMember(
+    @Param('memberId') memberId: number,
+    @Param('committeeId') committeeId: number,
+    @CurrentUser() user: Member
+    ) {
+    console.log('add memberId', memberId, 'committeeId', committeeId)
+    const thisMember = await Member.createQueryBuilder("m")
+      .where("m.id = :id", { id: memberId })
+      .leftJoinAndSelect("m.committees", "c")
+      .leftJoinAndSelect("m.role", "r")
+      .leftJoinAndSelect("m.team", "t")
+      .leftJoinAndSelect("m.activities", "a")
+      .leftJoinAndSelect("m.positions", "p")
+      .getOne()
+
+    const thisCommittee = await Committee.findOne( committeeId )
+    thisMember.committees.push(thisCommittee)
+    await thisCommittee.save()
+    await thisMember.save()
+    return thisMember
+  }
+
+  @Authorized()
+  @Patch('/committees/leave/:memberId([0-9]+)/:committeeId([0-9]+)')
+  async removeCommitteeFromMember(
+    @Param('memberId') memberId: number,
+    @Param('committeeId') committeeId: number,
+    @CurrentUser() user: Member
+    ) {
+    console.log('remove memberId', memberId, 'committeeId', committeeId)
+    const thisMember = await Member.createQueryBuilder("m")
+      .where("m.id = :id", { id: memberId })
+      .leftJoinAndSelect("m.committees", "c")
+      .leftJoinAndSelect("m.role", "r")
+      .leftJoinAndSelect("m.team", "t")
+      .leftJoinAndSelect("m.activities", "a")
+      .leftJoinAndSelect("m.positions", "p")
+      .getOne()
+
+    const thisCommittee = await Committee.findOne( committeeId )
+    thisMember.committees.splice(
+      thisMember.committees.findIndex(committee => committeeId === committee.id),
+      1
+    )
+    await thisCommittee.save()
+    await thisMember.save()
+    return thisMember
+  }
+
 
   @Authorized()
   @Get("/members")
