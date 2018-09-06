@@ -52,7 +52,7 @@ export class Member extends BaseEntity {
   streetAddress: string
 
   // @IsString()
-  @MaxLength(6, { message: 'Invalid Postal Code' })
+  @Length(6, 6, { message: 'Invalid Postal Code' })
   @Column('char', { length: 6, nullable: true })
   postalCode: string
 
@@ -93,9 +93,11 @@ export class Member extends BaseEntity {
   activityPoints: number
 
   @ManyToOne(() => Role, role => role.members, { eager: true })
+  @JoinTable()
   role: Role
 
   @ManyToOne(() => Team, team => team.members, { eager: true })
+  @JoinTable()
   team: Team
 
   @ManyToMany(() => Committee, committee => committee.members)

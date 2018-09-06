@@ -4,7 +4,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   ManyToOne,
-  JoinColumn
+  JoinColumn,
+  CreateDateColumn
 } from 'typeorm'
 import { Committee } from './Committee'
 import { Member } from './Member'
@@ -17,10 +18,13 @@ export class Message extends BaseEntity {
   @Column('text')
   body: string
 
-  @ManyToOne(() => Committee, committee => committee.messages)
+  @ManyToOne(() => Committee, committee => committee.messages, { onDelete: 'CASCADE' })
   committee: Committee
 
   @ManyToOne(() => Member, member => member.messages, { eager: true })
   member: Member
+
+  @CreateDateColumn()
+  created_at: Date
 
 }

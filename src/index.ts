@@ -1,21 +1,22 @@
-import { connectDatabase } from './databaseConnection'
-import { createKoaServer, Action, BadRequestError } from 'routing-controllers'
-import PopulateController from './controllers/Populate'
-import ActivityController from './controllers/adminControllers/ActivityController'
-import { verify } from './jwt'
-import { Member } from './entities/Member'
-import MemberController from './controllers/MemberController'
-import LoginController from './controllers/LoginController'
-import MetaDataController from './controllers/MetaDataCotroller'
-import CommitteeController from './controllers/CommitteeController'
-import MemberActivityController from './controllers/MemberActivityController'
-import * as dotenv from 'dotenv'
+import { connectDatabase } from "./databaseConnection"
+import { createKoaServer, Action, BadRequestError } from "routing-controllers"
+import PopulateController from "./controllers/Populate"
+import ActivityController from "./controllers/adminControllers/ActivityController"
+import { verify } from "./jwt"
+import { Member } from "./entities/Member"
+import MemberController from "./controllers/MemberController"
+import LoginController from "./controllers/LoginController"
+import MetaDataController from "./controllers/MetaDataCotroller"
+import CommitteeController from "./controllers/CommitteeController"
+import MemberActivityController from "./controllers/MemberActivityController"
+import * as dotenv from "dotenv"
 dotenv.config()
 
 import {
   updateAttendanceRate,
   updateCurrentMember
-} from './libs/updateAttendanceRate'
+} from "./libs/updateAttendanceRate"
+import TeamController from "./controllers/TeamController"
 
 export const app = createKoaServer({
   cors: true,
@@ -26,7 +27,8 @@ export const app = createKoaServer({
     LoginController,
     MetaDataController,
     CommitteeController,
-    MemberActivityController
+    MemberActivityController,
+    TeamController
   ],
   authorizationChecker: (action: Action) => {
     const token: string = action.request.headers.authorization
@@ -56,7 +58,7 @@ const PORT = process.env.PORT || 4000
 connectDatabase()
   .then(_ => {
     app.listen(PORT, () => {
-      console.log('Server is on ' + PORT)
+      console.log("Server is on " + PORT)
     })
     setInterval(() => {
       updateAttendanceRate()

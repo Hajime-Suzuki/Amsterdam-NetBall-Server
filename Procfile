@@ -1,1 +1,1 @@
-web: node src/build/index.js
+web: node build/index.js

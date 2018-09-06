@@ -4,17 +4,21 @@ import {
   Post,
   Param,
   Get,
+  Patch,
+  Put,
   Body,
   Authorized,
   CurrentUser,
   QueryParams,
-  Patch,
-  BadRequestError
+  BadRequestError,
+  NotFoundError
 } from 'routing-controllers'
 import { getRepository, Brackets } from 'typeorm'
 import { Member } from '../entities/Member'
+import { Team } from '../entities/Team'
 import { Position } from '../entities/Position'
 import { Role } from '../entities/Role'
+import { Committee } from '../entities/Committee'
 import * as moment from 'moment'
 import { ifError } from 'assert'
 import { setMemberOrder } from '../libs/setMemberOrder'
@@ -34,10 +38,51 @@ export default class MemberController {
 
   @Authorized()
   @Get('/members/:id([0-9]+)')
-  getUser(@Param('id') id: number, @CurrentUser() user: Member) {
-    const member = Member.findOne(id)
-
+  async getUser(@Param('id') id: number, @CurrentUser() user: Member) {
+    const member = await Member.createQueryBuilder('m')
+      .where('m.id = :id', { id })
+      .leftJoinAndSelect('m.committees', 'c')
+      .leftJoinAndSelect('m.role', 'r')
+      .leftJoinAndSelect('m.team', 't')
+      .leftJoinAndSelect('m.activities', 'a')
+      .leftJoinAndSelect('m.positions', 'p')
+      .getOne()
     return member
+  }
+
+  @Authorized()
+  @Put('/members/:id([0-9]+)')
+  async updateProfile(
+    @Param('id') id: number,
+    @Body() update,
+    @CurrentUser() user: Member
+  ) {
+    const member = await Member.findOne(id)
+    if (!member) throw new NotFoundError('Cannot find member')
+
+    if (update.team) {
+      const oldTeam = await Team.findOne(member.team.id, {
+        relations: ['members']
+      })
+
+      if (oldTeam.members.length > 0) {
+        oldTeam.members.splice(
+          oldTeam.members.findIndex(member => id === member.id),
+          1
+        )
+        await oldTeam.save()
+      }
+
+      const team = await Team.findOne(update.team, { relations: ['members'] })
+      member.team = team
+      team.members.push(member)
+      await Promise.all([member.save(), team.save()])
+      const m = await Member.findOne(id)
+      return m
+    } else {
+      const updatedMember = await Member.merge(member, update).save()
+      return updatedMember
+    }
   }
 
   @Authorized()
@@ -70,6 +115,59 @@ export default class MemberController {
 
     await member.save()
     return member
+  }
+
+  @Authorized()
+  @Patch('/committees/join/:memberId([0-9]+)/:committeeId([0-9]+)')
+  async addCommitteeToMember(
+    @Param('memberId') memberId: number,
+    @Param('committeeId') committeeId: number,
+    @CurrentUser() user: Member
+  ) {
+    console.log('add memberId', memberId, 'committeeId', committeeId)
+    const thisMember = await Member.createQueryBuilder('m')
+      .where('m.id = :id', { id: memberId })
+      .leftJoinAndSelect('m.committees', 'c')
+      .leftJoinAndSelect('m.role', 'r')
+      .leftJoinAndSelect('m.team', 't')
+      .leftJoinAndSelect('m.activities', 'a')
+      .leftJoinAndSelect('m.positions', 'p')
+      .getOne()
+
+    const thisCommittee = await Committee.findOne(committeeId)
+    thisMember.committees.push(thisCommittee)
+    await thisCommittee.save()
+    await thisMember.save()
+    return thisMember
+  }
+
+  @Authorized()
+  @Patch('/committees/leave/:memberId([0-9]+)/:committeeId([0-9]+)')
+  async removeCommitteeFromMember(
+    @Param('memberId') memberId: number,
+    @Param('committeeId') committeeId: number,
+    @CurrentUser() user: Member
+  ) {
+    console.log('remove memberId', memberId, 'committeeId', committeeId)
+    const thisMember = await Member.createQueryBuilder('m')
+      .where('m.id = :id', { id: memberId })
+      .leftJoinAndSelect('m.committees', 'c')
+      .leftJoinAndSelect('m.role', 'r')
+      .leftJoinAndSelect('m.team', 't')
+      .leftJoinAndSelect('m.activities', 'a')
+      .leftJoinAndSelect('m.positions', 'p')
+      .getOne()
+
+    const thisCommittee = await Committee.findOne(committeeId)
+    thisMember.committees.splice(
+      thisMember.committees.findIndex(
+        committee => committeeId === committee.id
+      ),
+      1
+    )
+    await thisCommittee.save()
+    await thisMember.save()
+    return thisMember
   }
 
   @Authorized()
